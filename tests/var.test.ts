@@ -1,15 +1,15 @@
 import { checkStatus } from "./exec-helper";
 
-const code_simple = `
+const simple = `
 fn main(): i32 {
   let a = 1;
   return a;
 }
 `;
 
-checkStatus("var-simple", code_simple, 1);
+checkStatus("var-simple", simple, 1);
 
-const code_complex = `
+const complex = `
 fn main(): i32 {
   let a = 1;
   let b = a + 1;
@@ -17,4 +17,4 @@ fn main(): i32 {
 }
 `;
 
-checkStatus("var-complex", code_complex, 3);
+checkStatus("var-complex", complex, 3);
