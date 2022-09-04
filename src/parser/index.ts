@@ -23,7 +23,7 @@ export function getParser({
       {
         fn_def_stmt: `
              fn identifier '(' ')' ':' type '{' 
-               func_body_stmts
+               fn_body_stmts
              '}'
            `,
       },
@@ -37,7 +37,7 @@ export function getParser({
         const entryBB = llvm.BasicBlock.Create(context, "entry", func);
         builder.SetInsertPoint(entryBB);
 
-        data[7](); // construct function body from 'func_body_stmts'
+        data[7](); // construct function body from 'fn_body_stmts'
 
         if (llvm.verifyFunction(func)) {
           throw new Error("Verifying function failed");
@@ -45,26 +45,26 @@ export function getParser({
       })
     )
     .define(
-      { func_body_stmts: `func_body_stmt` },
+      { fn_body_stmts: `fn_body_stmt` },
       LR.dataReducer((data) => data[0])
     )
     .define(
-      { func_body_stmts: `func_body_stmts func_body_stmt` },
+      { fn_body_stmts: `fn_body_stmts fn_body_stmt` },
       LR.dataReducer((data) => () => {
         data[0]();
         data[1]();
       })
     )
     .define(
-      { func_body_stmt: `return_stmt` },
+      { fn_body_stmt: `ret_stmt` },
       LR.dataReducer((data) => data[0])
     )
     .define(
-      { func_body_stmt: `assign_stmt` },
+      { fn_body_stmt: `assign_stmt` },
       LR.dataReducer((data) => data[0])
     )
     .define(
-      { return_stmt: `return exp ';'` },
+      { ret_stmt: `return exp ';'` },
       LR.dataReducer((data) => () => builder.CreateRet(data[1]() as llvm.Value))
     )
     .define(
