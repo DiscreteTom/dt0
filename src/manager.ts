@@ -16,6 +16,7 @@ export function parse(code: string, moduleID: string) {
   const res = manager.parseAll(code);
 
   if (res.accept) {
+    res.buffer[0].data(); // calculate all lazy functions
     if (llvm.verifyModule(module)) {
       throw new Error("Verifying module failed");
     }

@@ -9,7 +9,7 @@ export function getTypeParser(builder: llvm.IRBuilder) {
   for (const name in types) {
     typeParser.define(
       { type: name },
-      LR.dataReducer(() => types[name](builder))
+      LR.dataReducer(() => () => types[name](builder))
     );
   }
 
