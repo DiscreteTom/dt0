@@ -3,7 +3,7 @@ import llvm from "llvm-bindings";
 import { ASTData } from "./model";
 
 export function getMathParser(builder: llvm.IRBuilder) {
-  const mathParser = new LR.ParserBuilder<ASTData>()
+  return new LR.ParserBuilder<ASTData>()
     .define(
       { exp: `'-' exp` },
       LR.dataReducer(
@@ -57,6 +57,4 @@ export function getMathParser(builder: llvm.IRBuilder) {
       { exp: `'(' exp ')'` },
       LR.dataReducer((values) => values[1])
     );
-
-  return mathParser;
 }
