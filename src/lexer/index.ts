@@ -2,7 +2,7 @@ import { Lexer } from "retsac";
 
 export const lexer = new Lexer.Builder()
   .ignore(/^\s/) // ignore blank chars
-  .define(Lexer.wordType("fn", "return", "let")) // keywords
+  .define(Lexer.wordType("pub", "fn", "return", "let")) // keywords
   .define({
     integer: /^([1-9][0-9]*|0)/,
     identifier: /^[a-zA-Z_]\w*/,
