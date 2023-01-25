@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "binaryen": "^111.0.0",
-    "retsac": "0.4.0-beta.2"
+    "retsac": "^0.4.0-beta.3"
   },
   "devDependencies": {
     "@types/jest": "^28.1.5",
