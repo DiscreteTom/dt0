@@ -1928,10 +1928,10 @@ resolve@^1.20.0:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-retsac@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.5.0.tgz#0e7d7ebb96b1d9875afb482f4bb0285299c30d77"
-  integrity sha512-Qhz177OlYksM7JbuHyxCe+8KEBEAtYS623u2cZzFG4bdoG8PfZ8pjLeUs1UuGT+wK1jf3lqi8ojrbnuyk1/sEA==
+retsac@^0.5.1:
+  version "0.5.1"
+  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.5.1.tgz#41c6fd6b057e0c692ac70e436a0e8512dda1a424"
+  integrity sha512-Azhxt9vJwYwfMBd2vQ+s7jZOgsHN6Yp4rWWl+v5FelDAUFOVAduIQsLpYygccyD+AVp3aDZcM09T2IJoCFw33A==
 
 rimraf@^3.0.0:
   version "3.0.2"
