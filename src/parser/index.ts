@@ -1,96 +1,95 @@
-import { LR } from "retsac";
+import binaryen from "binaryen";
+import { ELR } from "retsac";
 import { lexer } from "../lexer";
-import llvm from "llvm-bindings";
-import { getTypeParser } from "./type";
-import { ASTData } from "./model";
-import { getMathParser } from "./math";
+import { applyMathRules } from "./rules";
+import { st } from "./symbol-table";
 
-export function getParser({
-  module,
-  context,
-  builder,
-}: {
-  module: llvm.Module;
-  context: llvm.LLVMContext;
-  builder: llvm.IRBuilder;
-}) {
-  /** Symbol table. */
-  const st = new Map<string, llvm.Value>();
+const mod = new binaryen.Module();
 
-  return new LR.ParserBuilder<ASTData>()
-    .entry("fn_def_stmt")
-    .define(
-      {
-        fn_def_stmt: `
-             fn identifier '(' ')' ':' type '{' 
-               fn_body_stmts
-             '}'
-           `,
-      },
-      LR.dataReducer((data, { matched }) => () => {
-        const func = llvm.Function.Create(
-          llvm.FunctionType.get(data[5]() as llvm.Type, false),
-          llvm.Function.LinkageTypes.ExternalLinkage,
-          matched[1].text,
-          module
-        );
-        const entryBB = llvm.BasicBlock.Create(context, "entry", func);
-        builder.SetInsertPoint(entryBB);
+type Data = {
+  value?: binaryen.ExpressionRef;
+  array?: binaryen.ExpressionRef[];
+};
 
-        data[7](); // construct function body from 'fn_body_stmts'
+const builder = new ELR.ParserBuilder<Data>()
+  .entry("fn_def")
+  .define(
+    {
+      fn_def: `
+        pub fn identifier '(' ')' ':' identifier '{'
+          stmts
+        '}'
+      `,
+    },
+    ELR.traverser<Data>(({ $ }) => {
+      // create a new scope for this function
+      st.pushScope();
 
-        if (llvm.verifyFunction(func)) {
-          throw new Error("Verifying function failed");
-        }
-      })
-    )
-    .define(
-      { fn_body_stmts: `fn_body_stmt` },
-      LR.dataReducer((data) => data[0])
-    )
-    .define(
-      { fn_body_stmts: `fn_body_stmts fn_body_stmt` },
-      LR.dataReducer((data) => () => {
-        data[0]();
-        data[1]();
-      })
-    )
-    .define(
-      { fn_body_stmt: `ret_stmt` },
-      LR.dataReducer((data) => data[0])
-    )
-    .define(
-      { fn_body_stmt: `assign_stmt` },
-      LR.dataReducer((data) => data[0])
-    )
-    .define(
-      { ret_stmt: `return exp ';'` },
-      LR.dataReducer((data) => () => builder.CreateRet(data[1]() as llvm.Value))
-    )
-    .define(
-      { exp: "integer" },
-      LR.dataReducer(
-        (_, { matched }) =>
-          () =>
-            builder.getInt32(parseInt(matched[0].text))
-      )
-    )
-    .define(
-      { exp: `identifier` },
-      LR.dataReducer(
-        (_, { matched }) =>
-          () =>
-            st.get(matched[0].text)
-      )
-    )
-    .define(
-      { assign_stmt: `let identifier '=' exp ';'` },
-      LR.dataReducer((data, { matched }) => () => {
-        st.set(matched[1].text, data[3]() as llvm.Value);
-      })
-    )
-    .use(getTypeParser(builder))
-    .use(getMathParser(builder))
-    .checkSymbols(lexer.getTokenTypes())
-    .build();
-}
+      const funcName = $(`identifier`)!.text!;
+      const retTypeName = $(`identifier`, 1)!.text!;
+      const stmts = $(`stmts`)!.traverse()!.array!; // stmts's data is an array
+
+      mod.addFunction(
+        funcName, // function name
+        binaryen.none, // params type
+        st.get(retTypeName)!.type.prototype, // return type
+        [], // params
+        mod.block(null, stmts) // body
+      );
+      mod.addFunctionExport(funcName, funcName);
+    }).commit()
+  )
+  .define(
+    { stmts: `stmt` },
+    ELR.traverser(({ children }) => ({
+      array: [children![0].traverse()!.value!],
+    }))
+  )
+  .define(
+    { stmts: `stmts stmt` },
+    ELR.traverser(({ children }) => ({
+      array: [
+        ...children![0].traverse()!.array!,
+        children![1].traverse()!.value!,
+      ],
+    }))
+  )
+  // use default traverser
+  .define({ stmt: `assign_stmt | ret_stmt` })
+  .define(
+    { assign_stmt: `let identifier ':' identifier '=' exp ';'` },
+    ELR.traverser(({ $ }) => {
+      const name = $(`identifier`)!.text!;
+      const varTypeSymbol = st.get($(`identifier`, 1)!.text!)!;
+      const exp = $(`exp`)!.traverse()!.value!;
+
+      st.set(name, varTypeSymbol.type); // update symbol table to record this var
+      return { value: mod.local.set(st.get(name)!.index, exp) }; // return the expression ref
+    })
+  )
+  .define(
+    { ret_stmt: `return exp ';'` },
+    ELR.traverser<Data>(({ $ }) => ({
+      value: mod.return($(`exp`)!.traverse()!.value!), // return the expression ref
+    }))
+  )
+  .define(
+    { exp: `integer` },
+    ELR.traverser<Data>(({ children }) => ({
+      value: mod.i32.const(parseInt(children![0].text!)),
+    }))
+  )
+  .define(
+    { exp: `identifier` },
+    ELR.traverser<Data>(({ children }) => {
+      const symbol = st.get(children![0].text!)!;
+      return { value: mod.local.get(symbol.index, symbol.type.prototype) };
+    })
+  );
+
+// applyMathRules(builder);
+
+// check all, comment this line when production to improve performance
+builder.checkAll(lexer.getTokenTypes(), lexer);
+
+export const parser = builder.build(lexer);
