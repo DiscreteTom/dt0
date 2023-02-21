@@ -1,8 +1,8 @@
 import binaryen from "binaryen";
 import { ELR } from "retsac";
-import { lexer } from "../lexer";
-import { applyMathRules } from "./rules";
-import { st } from "./symbol-table";
+import { lexer } from "../lexer/index.js";
+// import { applyMathRules } from "./rules/";
+import { st } from "./symbol-table/index.js";
 
 const mod = new binaryen.Module();
 

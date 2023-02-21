@@ -1,5 +1,5 @@
-import { SymbolTable } from "./symbol-table";
-import { Type } from "../types";
+import { SymbolTable } from "./symbol-table.js";
+import { Type } from "../types.js";
 
 export const st = new SymbolTable<Type>();
 
