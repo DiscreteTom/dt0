@@ -85,11 +85,24 @@ const builder = new ELR.ParserBuilder<Data>()
       const symbol = st.get(children![0].text!)!;
       return { value: mod.local.get(symbol.index, symbol.type.prototype) };
     })
+  )
+  .define(
+    { exp: `exp '+' exp` },
+    ELR.traverser<Data>(({ children }) => ({
+      value: children![0].data!.value! + children![2].data!.value!,
+    }))
+  )
+  .resolveRS(
+    { exp: `exp '+' exp` },
+    { exp: `exp '+' exp` },
+    { next: `'+'`, reduce: true }
   );
+
+// builder.generateResolvers(lexer);
 
 // applyMathRules(builder);
 
 // check all, comment this line when production to improve performance
 builder.checkAll(lexer.getTokenTypes(), lexer);
 
-export const parser = builder.build(lexer);
+export const parser = builder.build(lexer, true);
