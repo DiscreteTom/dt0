@@ -37,6 +37,8 @@ const builder = new ELR.ParserBuilder<Data>()
         mod.block(null, stmts) // body
       );
       mod.addFunctionExport(funcName, funcName);
+
+      st.popScope();
     }).commit()
   )
   .define(
