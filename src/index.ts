@@ -1,1 +1,1 @@
-export { parser } from "./parser/index.js";
+export { parser, mod } from "./parser/index.js";

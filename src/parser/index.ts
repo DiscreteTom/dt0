@@ -4,7 +4,7 @@ import { lexer } from "../lexer/index.js";
 // import { applyMathRules } from "./rules/";
 import { st } from "./symbol-table/index.js";
 
-const mod = new binaryen.Module();
+export const mod = new binaryen.Module();
 
 type Data = {
   value?: binaryen.ExpressionRef;
