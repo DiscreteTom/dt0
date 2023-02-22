@@ -38,4 +38,11 @@ export class SymbolTable<T> {
     }
     return undefined;
   }
+
+  getLocalTypes() {
+    const scope = this.scopeStack.at(-1)!;
+    return [...scope.values()]
+      .sort((a, b) => a.index - b.index)
+      .map((v) => v.type);
+  }
 }
