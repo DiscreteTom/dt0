@@ -33,7 +33,7 @@ const builder = new ELR.ParserBuilder<Data>()
         funcName, // function name
         binaryen.none, // params type
         st.get(retTypeName)!.type.prototype, // return type
-        [], // params
+        st.getLocalTypes().map((t) => t.prototype), // local vars
         mod.block(null, stmts) // body
       );
       mod.addFunctionExport(funcName, funcName);
@@ -110,4 +110,4 @@ const builder = new ELR.ParserBuilder<Data>()
 // check all, comment this line when production to improve performance
 builder.checkAll(lexer.getTokenTypes(), lexer);
 
-export const parser = builder.build(lexer, true);
+export const parser = builder.build(lexer);
