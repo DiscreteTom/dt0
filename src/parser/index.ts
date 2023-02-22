@@ -91,7 +91,10 @@ const builder = new ELR.ParserBuilder<Data>()
   .define(
     { exp: `exp '+' exp` },
     ELR.traverser<Data>(({ children }) => ({
-      value: children![0].traverse()!.value! + children![2].traverse()!.value!,
+      value: mod.i32.add(
+        children![0].traverse()!.value!,
+        children![2].traverse()!.value!
+      ),
     }))
   )
   .resolveRS(
