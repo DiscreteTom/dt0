@@ -4,6 +4,6 @@ import { Type } from "../types.js";
 export const st = new SymbolTable<Type>();
 
 // set global symbols
-st.set("void", Type.Void);
-st.set("bool", Type.Bool);
-st.set("i32", Type.Int32);
+st.setGlobal("void", Type.Void);
+st.setGlobal("bool", Type.Bool);
+st.setGlobal("i32", Type.Int32);

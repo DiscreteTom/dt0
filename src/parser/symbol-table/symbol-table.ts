@@ -2,46 +2,106 @@ export type SymbolInfo<T> = {
   type: T;
   /** The index in local scope. */
   index: number;
+  visible: boolean;
 };
 
+/** var name => symbol info */
+export type Scope<T> = Map<string, SymbolInfo<T>>;
+
 export class SymbolTable<T> {
-  /** `(name => SymbolInfo)[]` */
-  private readonly scopeStack: Map<string, SymbolInfo<T>>[];
+  private readonly globalScope: Scope<T>;
+  private funcScope?: Scope<T>;
+  /** Local scopes (loop/condition block). */
+  private readonly outerScopeVarCount: number[];
 
   constructor() {
-    this.scopeStack = [new Map()];
+    this.globalScope = new Map();
+    this.funcScope = undefined;
+    this.outerScopeVarCount = [];
   }
 
-  /** Create a new scope. */
-  pushScope() {
-    this.scopeStack.push(new Map());
+  /** Create a new function scope. */
+  enterFunc() {
+    if (this.funcScope !== undefined)
+      throw new Error("Can't define function in function.");
+
+    this.funcScope = new Map();
     return this;
   }
 
-  /** Remove the current scope. */
+  /** Clear the current function scope. */
+  exitFunc() {
+    if (this.funcScope === undefined)
+      throw new Error("No existing function scope.");
+
+    this.funcScope = undefined;
+    return this;
+  }
+
+  /** Create a new local scope(e.g. loop/condition block). */
+  pushScope() {
+    if (this.funcScope == undefined)
+      throw new Error("Can't create local scope in global scope.");
+
+    this.outerScopeVarCount.push(this.funcScope.size);
+    return this;
+  }
+
+  /** Exit a local scope, make vars in that local scope invisible. */
   popScope() {
-    this.scopeStack.pop();
+    if (this.funcScope == undefined)
+      throw new Error("No existing function scope.");
+
+    const count = this.outerScopeVarCount.pop();
+    if (count == undefined) throw new Error("No local scope to pop.");
+
+    this.funcScope.forEach((s) => {
+      if (s.index > count) s.visible = false;
+    });
+
     return this;
   }
 
   /** Create a new local var in current scope. */
   set(name: string, type: T) {
-    const scope = this.scopeStack.at(-1)!;
-    scope.set(name, { type, index: scope.size });
+    if (this.funcScope == undefined)
+      throw new Error("No existing function scope.");
+
+    this.funcScope.set(name, {
+      type,
+      index: this.funcScope.size,
+      visible: true,
+    });
+
+    return this;
   }
 
-  /** Try to find var by name in all scopes. */
+  /** Create a new global var. */
+  setGlobal(name: string, type: T) {
+    this.globalScope.set(name, {
+      type,
+      index: this.globalScope.size,
+      visible: true,
+    });
+
+    return this;
+  }
+
+  /** Try to find var by name in the function scope then global scope. */
   get(name: string) {
-    for (let i = this.scopeStack.length - 1; i >= 0; i--) {
-      const scope = this.scopeStack[i];
-      if (scope.has(name)) return scope.get(name);
+    if (this.funcScope != undefined) {
+      const res = this.funcScope.get(name);
+      if (res != undefined && res.visible) return res;
     }
-    return undefined;
+
+    return this.globalScope.get(name);
   }
 
-  getLocalTypes() {
-    const scope = this.scopeStack.at(-1)!;
-    return [...scope.values()]
+  getFuncLocalTypes() {
+    if (this.funcScope == undefined)
+      throw new Error("No existing function scope.");
+
+    return [...this.funcScope.values()]
       .sort((a, b) => a.index - b.index)
       .map((v) => v.type);
   }

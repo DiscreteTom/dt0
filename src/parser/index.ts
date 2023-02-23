@@ -23,7 +23,7 @@ const builder = new ELR.ParserBuilder<Data>()
     },
     ELR.traverser<Data>(({ $ }) => {
       // create a new scope for this function
-      st.pushScope();
+      st.enterFunc();
 
       const funcName = $(`identifier`)!.text!;
       const retTypeName = $(`identifier`, 1)!.text!;
@@ -33,12 +33,12 @@ const builder = new ELR.ParserBuilder<Data>()
         funcName, // function name
         binaryen.none, // params type
         st.get(retTypeName)!.type.prototype, // return type
-        st.getLocalTypes().map((t) => t.prototype), // local vars
+        st.getFuncLocalTypes().map((t) => t.prototype), // local vars
         mod.block(null, stmts) // body
       );
       mod.addFunctionExport(funcName, funcName);
 
-      st.popScope();
+      st.exitFunc();
     }).commit()
   )
   .define(
