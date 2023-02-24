@@ -1,6 +1,6 @@
 # DT0
 
-The minimal language, used to test [retsac](https://github.com/DiscreteTom/retsac).
+The minimal language that compiles to [WebAssembly](http://webassembly.org/) via [Binaryen](https://github.com/WebAssembly/binaryen). This is used to test/demo [retsac](https://github.com/DiscreteTom/retsac).
 
 ## Features
 
