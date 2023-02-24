@@ -13,11 +13,13 @@ export class SymbolTable<T> {
   private funcScope?: Scope<T>;
   /** Local scopes (loop/condition block). */
   private readonly outerScopeVarCount: number[];
+  private funcParamCount: number;
 
   constructor() {
     this.globalScope = new Map();
     this.funcScope = undefined;
     this.outerScopeVarCount = [];
+    this.funcParamCount = 0;
   }
 
   /** Create a new function scope. */
@@ -26,6 +28,7 @@ export class SymbolTable<T> {
       throw new Error("Can't define function in function.");
 
     this.funcScope = new Map();
+    this.funcParamCount = 0;
     return this;
   }
 
@@ -35,6 +38,7 @@ export class SymbolTable<T> {
       throw new Error("No existing function scope.");
 
     this.funcScope = undefined;
+    this.funcParamCount = 0;
     return this;
   }
 
@@ -76,6 +80,13 @@ export class SymbolTable<T> {
     return this;
   }
 
+  setFuncParam(name: string, type: T) {
+    this.set(name, type);
+    this.funcParamCount++;
+
+    return this;
+  }
+
   /** Create a new global var. */
   setGlobal(name: string, type: T) {
     this.globalScope.set(name, {
@@ -97,12 +108,23 @@ export class SymbolTable<T> {
     return this.globalScope.get(name);
   }
 
+  getFuncParamTypes() {
+    if (this.funcScope == undefined)
+      throw new Error("No existing function scope.");
+
+    return [...this.funcScope.values()]
+      .sort((a, b) => a.index - b.index)
+      .filter((v) => v.index < this.funcParamCount)
+      .map((v) => v.type);
+  }
+
   getFuncLocalTypes() {
     if (this.funcScope == undefined)
       throw new Error("No existing function scope.");
 
     return [...this.funcScope.values()]
       .sort((a, b) => a.index - b.index)
+      .filter((v) => v.index >= this.funcParamCount)
       .map((v) => v.type);
   }
 }

@@ -23,11 +23,15 @@ const builder = new ELR.AdvancedBuilder<Data>()
 
       const funcName = $(`funcName`)[0].text!;
       const retTypeName = $(`retTypeName`)[0].text!;
+
+      // init params
+      $(`param`).forEach((p) => p.traverse());
+      // calculate stmts
       const stmts = $(`stmt`).map((s) => s.traverse()!);
 
       mod.addFunction(
         funcName, // function name
-        binaryen.none, // params type
+        binaryen.createType(st.getFuncParamTypes().map((t) => t.prototype)), // params type
         st.get(retTypeName)!.type.prototype, // return type
         st.getFuncLocalTypes().map((t) => t.prototype), // local vars
         mod.block(null, stmts) // body
@@ -40,7 +44,11 @@ const builder = new ELR.AdvancedBuilder<Data>()
   .define(
     { param: `identifier@varName ':' identifier@typeName` },
     ELR.traverser<Data>(({ $ }) => {
-      // TODO
+      // add param to symbol table
+      st.setFuncParam(
+        $(`varName`)[0].text!,
+        st.get($(`typeName`)[0].text!)!.type
+      );
     })
   )
   .define({ stmt: `assign_stmt | ret_stmt` }) // use default traverser
