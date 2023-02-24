@@ -6,18 +6,14 @@ import { st } from "./symbol-table/index.js";
 
 export const mod = new binaryen.Module();
 
-type Data = {
-  value?: binaryen.ExpressionRef;
-  array?: binaryen.ExpressionRef[];
-};
+type Data = binaryen.ExpressionRef;
 
-const builder = new ELR.ParserBuilder<Data>()
-  .entry("fn_def")
+const builder = new ELR.AdvancedBuilder<Data>()
   .define(
     {
       fn_def: `
-        pub fn identifier '(' ')' ':' identifier '{'
-          stmts
+        pub fn identifier@funcName '(' (param (',' param)*)? ')' ':' identifier@retTypeName '{'
+          stmt*
         '}'
       `,
     },
@@ -25,9 +21,9 @@ const builder = new ELR.ParserBuilder<Data>()
       // create a new scope for this function
       st.enterFunc();
 
-      const funcName = $(`identifier`)!.text!;
-      const retTypeName = $(`identifier`, 1)!.text!;
-      const stmts = $(`stmts`)!.traverse()!.array!; // stmts's data is an array
+      const funcName = $(`funcName`)[0].text!;
+      const retTypeName = $(`retTypeName`)[0].text!;
+      const stmts = $(`stmt`).map((s) => s.traverse()!);
 
       mod.addFunction(
         funcName, // function name
@@ -42,61 +38,50 @@ const builder = new ELR.ParserBuilder<Data>()
     }).commit()
   )
   .define(
-    { stmts: `stmt` },
-    ELR.traverser(({ children }) => ({
-      array: [children![0].traverse()!.value!],
-    }))
+    { param: `identifier@varName ':' identifier@typeName` },
+    ELR.traverser<Data>(({ $ }) => {
+      // TODO
+    })
   )
+  .define({ stmt: `assign_stmt | ret_stmt` }) // use default traverser
   .define(
-    { stmts: `stmts stmt` },
-    ELR.traverser(({ children }) => ({
-      array: [
-        ...children![0].traverse()!.array!,
-        children![1].traverse()!.value!,
-      ],
-    }))
-  )
-  // use default traverser
-  .define({ stmt: `assign_stmt | ret_stmt` })
-  .define(
-    { assign_stmt: `let identifier ':' identifier '=' exp ';'` },
+    {
+      assign_stmt: `let identifier@varName ':' identifier@typeName '=' exp ';'`,
+    },
     ELR.traverser(({ $ }) => {
-      const name = $(`identifier`)!.text!;
-      const varTypeSymbol = st.get($(`identifier`, 1)!.text!)!;
-      const exp = $(`exp`)!.traverse()!.value!;
+      const varName = $(`varName`)[0].text!;
+      const typeInfo = st.get($(`typeName`)[0].text!)!;
+      const exp = $(`exp`)[0].traverse()!;
 
-      st.set(name, varTypeSymbol.type); // update symbol table to record this var
-      return { value: mod.local.set(st.get(name)!.index, exp) }; // return the expression ref
+      st.set(varName, typeInfo.type); // update symbol table to record this var
+      return mod.local.set(st.get(varName)!.index, exp); // return the expression ref
     })
   )
   .define(
     { ret_stmt: `return exp ';'` },
-    ELR.traverser<Data>(({ $ }) => ({
-      value: mod.return($(`exp`)!.traverse()!.value!), // return the expression ref
-    }))
+    ELR.traverser<Data>(({ $ }) => mod.return($(`exp`)[0].traverse()!))
   )
   .define(
     { exp: `integer` },
-    ELR.traverser<Data>(({ children }) => ({
-      value: mod.i32.const(parseInt(children![0].text!)),
-    }))
+    ELR.traverser<Data>(({ children }) =>
+      mod.i32.const(parseInt(children![0].text!))
+    )
   )
   .define(
     { exp: `identifier` },
     ELR.traverser<Data>(({ children }) => {
       const symbol = st.get(children![0].text!)!;
-      return { value: mod.local.get(symbol.index, symbol.type.prototype) };
+      return mod.local.get(symbol.index, symbol.type.prototype);
     })
   )
   .define(
     { exp: `exp '+' exp` },
-    ELR.traverser<Data>(({ children }) => ({
-      value: mod.i32.add(
-        children![0].traverse()!.value!,
-        children![2].traverse()!.value!
-      ),
-    }))
+    ELR.traverser<Data>(({ children }) =>
+      mod.i32.add(children![0].traverse()!, children![2].traverse()!)
+    )
   )
+  .expand()
+  .entry("fn_def")
   .resolveRS(
     { exp: `exp '+' exp` },
     { exp: `exp '+' exp` },
