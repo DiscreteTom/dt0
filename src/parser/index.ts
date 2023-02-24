@@ -2,10 +2,11 @@ import binaryen from "binaryen";
 import { ELR } from "retsac";
 import { lexer } from "../lexer/index.js";
 import { Data, mod, st } from "./context.js";
+import { applyResolvers } from "./resolvers.js";
+import { applyExps, applyStmts } from "./rules/index.js";
 export { mod };
-// import { applyMathRules } from "./rules/";
 
-const builder = new ELR.AdvancedBuilder<Data>()
+const advanced = new ELR.AdvancedBuilder<Data>()
   .define(
     {
       fn_def: `
@@ -47,57 +48,16 @@ const builder = new ELR.AdvancedBuilder<Data>()
         st.get($(`typeName`)[0].text!)!.type
       );
     })
-  )
-  .define({ stmt: `assign_stmt | ret_stmt` }) // use default traverser
-  .define(
-    {
-      assign_stmt: `let identifier@varName ':' identifier@typeName '=' exp ';'`,
-    },
-    ELR.traverser(({ $ }) => {
-      const varName = $(`varName`)[0].text!;
-      const typeInfo = st.get($(`typeName`)[0].text!)!;
-      const exp = $(`exp`)[0].traverse()!;
-
-      st.set(varName, typeInfo.type); // update symbol table to record this var
-      return mod.local.set(st.get(varName)!.index, exp); // return the expression ref
-    })
-  )
-  .define(
-    { ret_stmt: `return exp ';'` },
-    ELR.traverser<Data>(({ $ }) => mod.return($(`exp`)[0].traverse()!))
-  )
-  .define(
-    { exp: `integer` },
-    ELR.traverser<Data>(({ children }) =>
-      mod.i32.const(parseInt(children![0].text!))
-    )
-  )
-  .define(
-    { exp: `identifier` },
-    ELR.traverser<Data>(({ children }) => {
-      const symbol = st.get(children![0].text!)!;
-      return mod.local.get(symbol.index, symbol.type.prototype);
-    })
-  )
-  .define(
-    { exp: `exp '+' exp` },
-    ELR.traverser<Data>(({ children }) =>
-      mod.i32.add(children![0].traverse()!, children![2].traverse()!)
-    )
-  )
-  .expand()
-  .entry("fn_def")
-  .resolveRS(
-    { exp: `exp '+' exp` },
-    { exp: `exp '+' exp` },
-    { next: `'+'`, reduce: true }
   );
 
-// builder.generateResolvers(lexer);
+applyStmts(advanced);
+applyExps(advanced);
 
-// applyMathRules(builder);
+const builder = advanced.expand().entry("fn_def");
+applyResolvers(builder);
 
-// check all, comment this line when production to improve performance
-builder.checkAll(lexer.getTokenTypes(), lexer);
-
-export const parser = builder.build(lexer);
+export const parser = builder
+  .generateResolvers(lexer)
+  // check all, comment this line when production to improve performance
+  .checkAll(lexer.getTokenTypes(), lexer)
+  .build(lexer);

@@ -8,5 +8,5 @@ export const lexer = new Lexer.Builder()
     identifier: /^[a-zA-Z_]\w*/,
   })
   .anonymous(Lexer.exact("&&", "||", "++", "--")) // double char operator
-  .anonymous(Lexer.exact(..."+-*/():{};=,")) // single char operator
+  .anonymous(Lexer.exact(..."+-*/():{};=,%")) // single char operator
   .build();
