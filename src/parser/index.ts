@@ -1,11 +1,9 @@
 import binaryen from "binaryen";
 import { ELR } from "retsac";
 import { lexer } from "../lexer/index.js";
-import { Data } from "./ASTData.js";
+import { Data, mod, st } from "./context.js";
+export { mod };
 // import { applyMathRules } from "./rules/";
-import { st } from "./symbol-table/index.js";
-
-export const mod = new binaryen.Module();
 
 const builder = new ELR.AdvancedBuilder<Data>()
   .define(
