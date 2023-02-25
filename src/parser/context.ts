@@ -1,6 +1,6 @@
 import binaryen from "binaryen";
-import { SymbolTable } from "./symbol-table.js";
-import { Type } from "./types.js";
+import { SymbolTable } from "./symbol-table";
+import { Type } from "./types";
 
 /** The data of ASTNode. */
 export type Data = binaryen.ExpressionRef;

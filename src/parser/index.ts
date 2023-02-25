@@ -1,9 +1,9 @@
 import binaryen from "binaryen";
 import { ELR } from "retsac";
-import { lexer } from "../lexer/index.js";
-import { Data, mod, st } from "./context.js";
-import { applyResolvers } from "./resolvers.js";
-import { applyExps, applyStmts } from "./rules/index.js";
+import { lexer } from "../lexer";
+import { Data, mod, st } from "./context";
+import { applyResolvers } from "./resolvers";
+import { applyExps, applyStmts } from "./rules";
 export { mod };
 
 const advanced = new ELR.AdvancedBuilder<Data>()

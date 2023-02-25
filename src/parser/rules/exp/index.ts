@@ -1,6 +1,6 @@
 import { ELR } from "retsac";
-import { Data, mod, st } from "../../context.js";
-import { applyMathRules } from "./math.js";
+import { Data, mod, st } from "../../context";
+import { applyMathRules } from "./math";
 
 export function applyExps(builder: ELR.AdvancedBuilder<Data>) {
   applyMathRules(builder);

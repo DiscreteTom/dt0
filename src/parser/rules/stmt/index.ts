@@ -1,6 +1,6 @@
 import { ELR } from "retsac";
-import { Data, mod, st } from "../../context.js";
-import { applyUnaryOpStmts } from "./unary-op.js";
+import { Data, mod, st } from "../../context";
+import { applyUnaryOpStmts } from "./unary-op";
 
 export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
   applyUnaryOpStmts(builder);
