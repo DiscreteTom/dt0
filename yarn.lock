@@ -2025,10 +2025,10 @@ resolve@^1.20.0:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-retsac@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/retsac/-/retsac-0.6.0.tgz#9574a3457ef3d99df8618cea906b4e78d8b91bf2"
-  integrity sha512-prnAem69kGz1GtXQ+r35oKnz7uxQKlCvc7iG2Ca//Sv5YYGmqWv1syv2v57vKCiree43h27dCzJywUfWaz4X7A==
+retsac@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/retsac/-/retsac-0.7.0.tgz#d3c55600423a8fe83e9506d08d5a08d8e26ca5f2"
+  integrity sha512-EUxbOVlh+gBcfLT5DWbf+g7IGUdqcwyKF2418L03PpFszNfa5GN2yXxE6wfBsZ2brJ6Ts2TuVImjedx7kbeuxg==
 
 safe-buffer@~5.1.1:
   version "5.1.2"
