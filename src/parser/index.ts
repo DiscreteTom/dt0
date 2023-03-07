@@ -56,8 +56,8 @@ applyExps(advanced);
 const builder = advanced.expand().entry("fn_def");
 applyResolvers(builder);
 
-export const parser = builder
-  .generateResolvers(lexer)
-  // check all, comment this line when production to improve performance
-  .checkAll(lexer.getTokenTypes(), lexer)
-  .build(lexer);
+export const parser = builder.build(
+  lexer,
+  // comment this option when production to optimize performance
+  { debug: true, checkAll: true, generateResolvers: "builder" }
+);
