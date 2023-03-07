@@ -1,0 +1,6 @@
+pub fn main(a: i32): i32 {
+  do {
+    a--;
+  } while a;
+  return a;
+}
