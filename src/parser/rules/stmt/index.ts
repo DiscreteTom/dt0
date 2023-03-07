@@ -21,7 +21,7 @@ export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
         const typeInfo = st.get($(`typeName`)[0].text!)!;
         const exp = $(`exp`)[0].traverse()!;
 
-        st.set(varName, typeInfo.type); // update symbol table to record this var
+        st.setLocal(varName, typeInfo.type); // update symbol table to record this var
         return mod.local.set(st.get(varName)!.index, exp); // return the expression ref
       })
     )

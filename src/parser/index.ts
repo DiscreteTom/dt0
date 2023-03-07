@@ -29,9 +29,9 @@ const advanced = new ELR.AdvancedBuilder<Data>()
 
       mod.addFunction(
         funcName, // function name
-        binaryen.createType(st.getFuncParamTypes().map((t) => t.prototype)), // params type
+        binaryen.createType(st.getParamTypes().map((t) => t.prototype)), // params type
         st.get(retTypeName)!.type.prototype, // return type
-        st.getFuncLocalTypes().map((t) => t.prototype), // local vars
+        st.getLocalTypes().map((t) => t.prototype), // local vars
         mod.block(null, stmts) // body
       );
       mod.addFunctionExport(funcName, funcName);
@@ -43,10 +43,7 @@ const advanced = new ELR.AdvancedBuilder<Data>()
     { param: `identifier@varName ':' identifier@typeName` },
     ELR.traverser<Data>(({ $ }) => {
       // add param to symbol table
-      st.setFuncParam(
-        $(`varName`)[0].text!,
-        st.get($(`typeName`)[0].text!)!.type
-      );
+      st.setParam($(`varName`)[0].text!, st.get($(`typeName`)[0].text!)!.type);
     })
   );
 

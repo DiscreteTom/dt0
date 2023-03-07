@@ -67,7 +67,7 @@ export class SymbolTable<T> {
   }
 
   /** Create a new local var in current scope. */
-  set(name: string, type: T) {
+  setLocal(name: string, type: T) {
     if (this.funcScope == undefined)
       throw new Error("No existing function scope.");
 
@@ -80,9 +80,13 @@ export class SymbolTable<T> {
     return this;
   }
 
-  setFuncParam(name: string, type: T) {
-    this.set(name, type);
+  /** Create a new param var in current function. This must be called before any local var's declaration. */
+  setParam(name: string, type: T) {
+    this.setLocal(name, type);
     this.funcParamCount++;
+
+    if (this.funcScope!.size != this.funcParamCount)
+      throw new Error("Param must be declared before local var.");
 
     return this;
   }
@@ -108,7 +112,8 @@ export class SymbolTable<T> {
     return this.globalScope.get(name);
   }
 
-  getFuncParamTypes() {
+  /** Return the param type array of the current function. */
+  getParamTypes() {
     if (this.funcScope == undefined)
       throw new Error("No existing function scope.");
 
@@ -118,7 +123,8 @@ export class SymbolTable<T> {
       .map((v) => v.type);
   }
 
-  getFuncLocalTypes() {
+  /** Return the local var type array of the current function. */
+  getLocalTypes() {
     if (this.funcScope == undefined)
       throw new Error("No existing function scope.");
 
