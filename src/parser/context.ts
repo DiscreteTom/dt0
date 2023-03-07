@@ -1,4 +1,5 @@
 import binaryen from "binaryen";
+import { LabelGenerator } from "./label-gen";
 import { SymbolTable } from "./symbol-table";
 import { Type } from "./types";
 
@@ -13,3 +14,5 @@ export const st = new SymbolTable<Type>();
 
 // set global symbols
 st.setGlobal("i32", Type.Int32);
+
+export const lg = new LabelGenerator();

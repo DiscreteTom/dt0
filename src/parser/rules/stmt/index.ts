@@ -1,5 +1,5 @@
 import { ELR } from "retsac";
-import { Data, mod, st } from "../../context";
+import { Data, mod, st, lg } from "../../context";
 import { applyUnaryOpStmts } from "./unary-op";
 
 export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
@@ -8,7 +8,7 @@ export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
   return builder
     .define(
       {
-        stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt`,
+        stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt | loop_stmt`,
       },
       ELR.commit()
     )
@@ -44,5 +44,19 @@ export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
     .define(
       { ret_stmt: `return exp ';'` },
       ELR.traverser<Data>(({ $ }) => mod.return($(`exp`)[0].traverse()!))
+    )
+    .define(
+      { loop_stmt: `do '{' stmt* '}' while exp ';'` },
+      ELR.traverser<Data>(({ $ }) => {
+        st.pushScope(); // push a new scope for loop
+        const stmts = $(`stmt`).map((s) => s.traverse()!);
+        const exp = $(`exp`)[0].traverse()!;
+        st.popScope(); // pop the scope for loop
+        const label = lg.next();
+        return mod.loop(
+          label,
+          mod.block(null, stmts.concat(mod.br(label, exp)))
+        );
+      })
     );
 }
