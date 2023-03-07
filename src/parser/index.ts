@@ -56,5 +56,9 @@ applyResolvers(builder);
 export const parser = builder.build(
   lexer,
   // comment this option when production to optimize performance
-  { debug: true, checkAll: true, generateResolvers: "builder" }
+  {
+    checkAll: true, // for dev
+    // debug: true, // for debug
+    // generateResolvers: "builder", // for debug
+  }
 );
