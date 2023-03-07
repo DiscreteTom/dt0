@@ -1,0 +1,14 @@
+pub fn main(): i32 {
+  let a: i32 = 0;
+  let b: i32 = 1;
+
+  if a {
+    let c: i32 = 2;
+    return a + b + c;
+  } else {
+    let d: i32 = 3;
+    return a - b - d;
+  }
+
+  return a + b;
+}
