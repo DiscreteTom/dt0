@@ -4,12 +4,11 @@ import { applyControlFlowStmts } from "./control-flow";
 import { applyFnDefStmts } from "./fn-def";
 import { applyUnaryOpStmts } from "./unary-op";
 
-export function applyStmts(builder: ELR.AdvancedBuilder<Data>) {
-  applyFnDefStmts(builder);
-  applyControlFlowStmts(builder);
-  applyUnaryOpStmts(builder);
-
+export function applyStmts(builder: ELR.IParserBuilder<Data>) {
   return builder
+    .use(applyFnDefStmts)
+    .use(applyControlFlowStmts)
+    .use(applyUnaryOpStmts)
     .define(
       {
         stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt | loop_stmt`,

@@ -3,7 +3,6 @@ import { Data } from "../context";
 import { applyExps } from "./exp";
 import { applyStmts } from "./stmt";
 
-export function applyAll(builder: ELR.AdvancedBuilder<Data>) {
-  applyStmts(builder);
-  applyExps(builder);
+export function applyAllRules(builder: ELR.IParserBuilder<Data>) {
+  return builder.use(applyStmts).use(applyExps);
 }

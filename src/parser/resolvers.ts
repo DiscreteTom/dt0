@@ -1,6 +1,6 @@
 import { ELR } from "retsac";
 
-export function applyResolvers<T>(builder: ELR.ParserBuilder<T>) {
+export function applyResolvers<T>(builder: ELR.IParserBuilder<T>) {
   return builder
     .resolveRS(
       { exp: `exp '+' exp` },

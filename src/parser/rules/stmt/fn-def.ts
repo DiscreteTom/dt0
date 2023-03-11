@@ -2,7 +2,7 @@ import binaryen from "binaryen";
 import { ELR } from "retsac";
 import { Data, mod, st } from "../../context";
 
-export function applyFnDefStmts(builder: ELR.AdvancedBuilder<Data>) {
+export function applyFnDefStmts(builder: ELR.IParserBuilder<Data>) {
   return builder
     .define(
       {

@@ -1,7 +1,7 @@
 import { ELR } from "retsac";
 import { Data, mod, st } from "../../context";
 
-export function applyUnaryOpStmts(builder: ELR.AdvancedBuilder<Data>) {
+export function applyUnaryOpStmts(builder: ELR.IParserBuilder<Data>) {
   return builder
     .define(
       { incr_stmt: `('++' identifier | identifier '++') ';'` },

@@ -1,7 +1,7 @@
 import { ELR } from "retsac";
 import { Data, mod } from "../../context";
 
-export function applyMathRules(builder: ELR.AdvancedBuilder<Data>) {
+export function applyMathRules(builder: ELR.IParserBuilder<Data>) {
   return builder
     .define(
       { exp: `exp '+' exp` },

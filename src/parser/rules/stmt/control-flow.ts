@@ -1,7 +1,7 @@
 import { ELR } from "retsac";
 import { Data, mod, st, lg } from "../../context";
 
-export function applyControlFlowStmts(builder: ELR.AdvancedBuilder<Data>) {
+export function applyControlFlowStmts(builder: ELR.IParserBuilder<Data>) {
   return builder
     .define(
       { if_stmt: `if exp '{' stmt@ifTrue* '}' (else '{' stmt@ifFalse* '}')?` },

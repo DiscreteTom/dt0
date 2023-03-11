@@ -2,10 +2,9 @@ import { ELR } from "retsac";
 import { Data, mod, st } from "../../context";
 import { applyMathRules } from "./math";
 
-export function applyExps(builder: ELR.AdvancedBuilder<Data>) {
-  applyMathRules(builder);
-
+export function applyExps(builder: ELR.IParserBuilder<Data>) {
   return builder
+    .use(applyMathRules)
     .define(
       { exp: `integer` },
       ELR.traverser<Data>(({ children }) =>
