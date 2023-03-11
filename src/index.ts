@@ -1,1 +1,1 @@
-export { parser, mod } from "./parser";
+export { Compiler } from "./parser";

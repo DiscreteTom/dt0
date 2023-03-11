@@ -1,49 +1,51 @@
 import binaryen from "binaryen";
 import { ELR } from "retsac";
-import { Data, mod, st } from "../../context";
+import { Data, Context } from "../../context";
 
-export function applyFnDefStmts(builder: ELR.IParserBuilder<Data>) {
-  return builder
-    .define(
-      {
-        fn_def: `
+export function applyFnDefStmts(ctx: Context) {
+  return (builder: ELR.IParserBuilder<Data>) => {
+    return builder
+      .define(
+        {
+          fn_def: `
         pub fn identifier@funcName '(' (param (',' param)*)? ')' ':' identifier@retTypeName '{'
           stmt*
         '}'
       `,
-      },
-      ELR.traverser<Data>(({ $ }) => {
-        // create a new scope for this function
-        st.enterFunc();
+        },
+        ELR.traverser<Data>(({ $ }) => {
+          // create a new scope for this function
+          ctx.st.enterFunc();
 
-        const funcName = $(`funcName`)[0].text!;
-        const retTypeName = $(`retTypeName`)[0].text!;
+          const funcName = $(`funcName`)[0].text!;
+          const retTypeName = $(`retTypeName`)[0].text!;
 
-        // init params
-        $(`param`).forEach((p) => p.traverse());
-        // calculate stmts
-        const stmts = $(`stmt`).map((s) => s.traverse()!);
+          // init params
+          $(`param`).forEach((p) => p.traverse());
+          // calculate stmts
+          const stmts = $(`stmt`).map((s) => s.traverse()!);
 
-        mod.addFunction(
-          funcName, // function name
-          binaryen.createType(st.getParamTypes().map((t) => t.prototype)), // params type
-          st.get(retTypeName)!.type.prototype, // return type
-          st.getLocalTypes().map((t) => t.prototype), // local vars
-          mod.block(null, stmts) // body
-        );
-        mod.addFunctionExport(funcName, funcName);
+          ctx.mod.addFunction(
+            funcName, // function name
+            binaryen.createType(ctx.st.getParamTypes().map((t) => t.prototype)), // params type
+            ctx.st.get(retTypeName)!.type.prototype, // return type
+            ctx.st.getLocalTypes().map((t) => t.prototype), // local vars
+            ctx.mod.block(null, stmts) // body
+          );
+          ctx.mod.addFunctionExport(funcName, funcName);
 
-        st.exitFunc();
-      }).commit()
-    )
-    .define(
-      { param: `identifier@varName ':' identifier@typeName` },
-      ELR.traverser<Data>(({ $ }) => {
-        // add param to symbol table
-        st.setParam(
-          $(`varName`)[0].text!,
-          st.get($(`typeName`)[0].text!)!.type
-        );
-      })
-    );
+          ctx.st.exitFunc();
+        }).commit()
+      )
+      .define(
+        { param: `identifier@varName ':' identifier@typeName` },
+        ELR.traverser<Data>(({ $ }) => {
+          // add param to symbol table
+          ctx.st.setParam(
+            $(`varName`)[0].text!,
+            ctx.st.get($(`typeName`)[0].text!)!.type
+          );
+        })
+      );
+  };
 }

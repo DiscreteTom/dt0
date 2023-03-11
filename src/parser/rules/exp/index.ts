@@ -1,21 +1,23 @@
 import { ELR } from "retsac";
-import { Data, mod, st } from "../../context";
+import { Data, Context } from "../../context";
 import { applyMathRules } from "./math";
 
-export function applyExps(builder: ELR.IParserBuilder<Data>) {
-  return builder
-    .use(applyMathRules)
-    .define(
-      { exp: `integer` },
-      ELR.traverser<Data>(({ children }) =>
-        mod.i32.const(parseInt(children![0].text!))
+export function applyExps(ctx: Context) {
+  return (builder: ELR.IParserBuilder<Data>) => {
+    return builder
+      .use(applyMathRules(ctx))
+      .define(
+        { exp: `integer` },
+        ELR.traverser<Data>(({ children }) =>
+          ctx.mod.i32.const(parseInt(children![0].text!))
+        )
       )
-    )
-    .define(
-      { exp: `identifier` },
-      ELR.traverser<Data>(({ children }) => {
-        const symbol = st.get(children![0].text!)!;
-        return mod.local.get(symbol.index, symbol.type.prototype);
-      })
-    );
+      .define(
+        { exp: `identifier` },
+        ELR.traverser<Data>(({ children }) => {
+          const symbol = ctx.st.get(children![0].text!)!;
+          return ctx.mod.local.get(symbol.index, symbol.type.prototype);
+        })
+      );
+  };
 }
