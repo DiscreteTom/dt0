@@ -1,21 +1,15 @@
 import * as fs from "fs";
-import { parser, mod } from "../../src";
+import { Compiler } from "../../src";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 
-// test("loop", () => {
-const res = parser.parseAll(
-  fs.readFileSync(__filename.replace("test.ts", "dt0"), "utf-8")
-);
-
-if (!res.accept) throw new Error("Parse error");
-
-res.buffer[0].traverse();
-
-// mod.optimize();
-
-if (!mod.validate()) throw new Error("Module is invalid");
-
-console.log(mod.emitText());
-// });
+test("loop", () => {
+  const compiler = new Compiler();
+  const wasm = compiler.compile(
+    fs.readFileSync(__filename.replace("test.ts", "dt0"), "utf-8")
+  );
+  expect((wasm.exports.test as (a: number) => number)(0)).toBe(0);
+  expect((wasm.exports.test as (a: number) => number)(1)).toBe(0);
+  expect((wasm.exports.test as (a: number) => number)(10)).toBe(0);
+});
