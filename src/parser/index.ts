@@ -31,7 +31,7 @@ export class Compiler {
     if (!res.accept) throw new Error("Parse error");
     res.buffer[0].traverse();
 
-    if (options?.optimize) this.ctx.mod.optimize();
+    if (options?.optimize ?? true) this.ctx.mod.optimize();
 
     if (!this.ctx.mod.validate()) throw new Error("Module is invalid");
 
