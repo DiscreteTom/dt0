@@ -8,21 +8,22 @@ export class Compiler {
   private readonly parser: ELR.Parser<Data>;
   private readonly ctx: Context;
 
-  constructor() {
+  constructor(options?: {
+    /** Enable this to print debug info. */
+    debug?: boolean;
+    /** Enable this to see if there is any error in the compiler. */
+    checkAll?: boolean;
+  }) {
     this.ctx = new Context();
     this.parser = new ELR.AdvancedBuilder<Data>()
       .entry("fn_def")
       .use(applyAllRules(this.ctx))
       .use(applyResolvers)
-      .build(
-        lexer,
-        // comment this option when production to optimize performance
-        {
-          checkAll: true, // for dev
-          // debug: true, // for debug
-          // generateResolvers: "builder", // for debug
-        }
-      );
+      .build(lexer, {
+        checkAll: options?.checkAll, // for dev
+        debug: options?.debug, // for debug
+        // generateResolvers: "builder", // for debug
+      });
   }
 
   compile(code: string, options?: { optimize?: boolean }) {
