@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 
 test("hello-world", () => {
-  const compiler = new Compiler();
+  const compiler = new Compiler({ checkAll: true });
   const wasm = compiler.compile(
     fs.readFileSync(__filename.replace("test.ts", "dt0"), "utf-8")
   );
