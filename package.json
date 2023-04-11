@@ -6,6 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
+    "clean": "tsc --build --clean",
+    "build:example": "tsc --build example.tsconfig.json",
+    "clean:example": "tsc --build --clean example.tsconfig.json",
     "dev": "tsc && jest",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
