@@ -11,6 +11,7 @@ export class Compiler {
 
   constructor(options?: CompilerOptions) {
     this.ctx = new Context();
+    if (options?.profile) console.time(`build parser`);
     this.parser = new ELR.AdvancedBuilder<Data>()
       .entry("fn_def")
       .use(applyAllRules(this.ctx))
@@ -20,17 +21,29 @@ export class Compiler {
         debug: options?.debug, // for debug
         // generateResolvers: "builder", // for debug
       });
+    if (options?.profile) console.timeEnd(`build parser`);
   }
 
   private parse(code: string, options?: CompileOptions) {
+    if (options?.profile) console.time(`parse`);
     const res = this.parser.reset().parseAll(code);
-
+    if (options?.profile) console.timeEnd(`parse`);
     if (!res.accept) throw new Error("Parse error");
+
+    if (options?.profile) console.time(`traverse`);
     res.buffer[0].traverse();
+    if (options?.profile) console.timeEnd(`traverse`);
 
-    if (options?.optimize ?? true) this.ctx.mod.optimize();
+    if (options?.optimize ?? true) {
+      if (options?.profile) console.time(`optimize`);
+      this.ctx.mod.optimize();
+      if (options?.profile) console.timeEnd(`optimize`);
+    }
 
-    if (!this.ctx.mod.validate()) throw new Error("Module is invalid");
+    if (options?.profile) console.time(`validate`);
+    const valid = this.ctx.mod.validate();
+    if (options?.profile) console.timeEnd(`validate`);
+    if (!valid) throw new Error("Module is invalid");
   }
 
   compile(code: string, options?: CompileOptions) {
