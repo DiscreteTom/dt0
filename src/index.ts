@@ -1,1 +1,1 @@
-export { Compiler } from "./parser";
+export { Compiler } from "./parser/index.js";

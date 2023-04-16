@@ -1,11 +1,12 @@
 import { ELR } from "retsac";
-import { Data, Context } from "../../context";
-import { applyControlFlowStmts } from "./control-flow";
-import { applyFnDefStmts } from "./fn-def";
-import { applyUnaryOpStmts } from "./unary-op";
+import { BuilderDecorator } from "retsac/out/parser/ELR";
+import { Data, Context } from "../../context.js";
+import { applyControlFlowStmts } from "./control-flow.js";
+import { applyFnDefStmts } from "./fn-def.js";
+import { applyUnaryOpStmts } from "./unary-op.js";
 
-export function applyStmts(ctx: Context) {
-  return (builder: ELR.IParserBuilder<Data>) => {
+export function applyStmts(ctx: Context): BuilderDecorator<Data> {
+  return (builder) => {
     return builder
       .use(applyFnDefStmts(ctx))
       .use(applyControlFlowStmts(ctx))

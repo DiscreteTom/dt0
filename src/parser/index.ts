@@ -1,8 +1,8 @@
 import { ELR } from "retsac";
-import { lexer } from "../lexer";
-import { Data, Context } from "./context";
-import { applyResolvers } from "./resolvers";
-import { applyAllRules } from "./rules";
+import { lexer } from "../lexer/index.js";
+import { Data, Context } from "./context.js";
+import { applyResolvers } from "./resolvers.js";
+import { applyAllRules } from "./rules/index.js";
 
 export class Compiler {
   private readonly parser: ELR.Parser<Data>;

@@ -1,5 +1,5 @@
 import { ELR } from "retsac";
-import { Context, Data } from "../../context";
+import { Context, Data } from "../../context.js";
 
 export function applyMathRules(ctx: Context) {
   return (builder: ELR.IParserBuilder<Data>) => {

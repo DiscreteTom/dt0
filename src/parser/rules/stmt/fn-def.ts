@@ -1,6 +1,6 @@
 import binaryen from "binaryen";
 import { ELR } from "retsac";
-import { Data, Context } from "../../context";
+import { Data, Context } from "../../context.js";
 
 export function applyFnDefStmts(ctx: Context) {
   return (builder: ELR.IParserBuilder<Data>) => {

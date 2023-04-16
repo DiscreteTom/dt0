@@ -1,7 +1,7 @@
 import binaryen from "binaryen";
-import { LabelGenerator } from "./label-gen";
-import { SymbolTable } from "./symbol-table";
-import { Type } from "./types";
+import { LabelGenerator } from "./label-gen.js";
+import { SymbolTable } from "./symbol-table.js";
+import { Type } from "./types.js";
 
 /** The data of ASTNode. */
 export type Data = binaryen.ExpressionRef;

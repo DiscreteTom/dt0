@@ -1,5 +1,5 @@
 import { ELR } from "retsac";
-import { Data, Context } from "../../context";
+import { Data, Context } from "../../context.js";
 
 export function applyUnaryOpStmts(ctx: Context) {
   return (builder: ELR.IParserBuilder<Data>) => {
