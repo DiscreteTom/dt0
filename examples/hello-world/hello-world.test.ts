@@ -1,6 +1,6 @@
 import { build } from "../helper.js";
 
-const wasm = build(import.meta.url) as {
+const wasm = build(import.meta.url, { compiler: { checkAll: true } }) as {
   exports: {
     test: (a: number) => number;
   };
