@@ -3,17 +3,13 @@ import { lexer } from "../lexer/index.js";
 import { Data, Context } from "./context.js";
 import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
+import { CompileOptions, CompilerOptions } from "./model.js";
 
 export class Compiler {
   private readonly parser: ELR.Parser<Data>;
   private readonly ctx: Context;
 
-  constructor(options?: {
-    /** Enable this to print debug info. */
-    debug?: boolean;
-    /** Enable this to see if there is any error in the compiler. */
-    checkAll?: boolean;
-  }) {
+  constructor(options?: CompilerOptions) {
     this.ctx = new Context();
     this.parser = new ELR.AdvancedBuilder<Data>()
       .entry("fn_def")
@@ -26,7 +22,7 @@ export class Compiler {
       });
   }
 
-  compile(code: string, options?: { optimize?: boolean }) {
+  compile(code: string, options?: CompileOptions) {
     const res = this.parser.reset().parseAll(code);
 
     if (!res.accept) throw new Error("Parse error");
