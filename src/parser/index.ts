@@ -22,7 +22,7 @@ export class Compiler {
       });
   }
 
-  compile(code: string, options?: CompileOptions) {
+  private parse(code: string, options?: CompileOptions) {
     const res = this.parser.reset().parseAll(code);
 
     if (!res.accept) throw new Error("Parse error");
@@ -31,10 +31,17 @@ export class Compiler {
     if (options?.optimize ?? true) this.ctx.mod.optimize();
 
     if (!this.ctx.mod.validate()) throw new Error("Module is invalid");
+  }
 
-    // console.log(mod.emitText());
+  compile(code: string, options?: CompileOptions) {
+    this.parse(code, options);
 
     const compiled = new WebAssembly.Module(this.ctx.mod.emitBinary());
     return new WebAssembly.Instance(compiled, {});
+  }
+
+  emitText(code: string, options?: CompileOptions) {
+    this.parse(code, options);
+    return this.ctx.mod.emitText();
   }
 }
