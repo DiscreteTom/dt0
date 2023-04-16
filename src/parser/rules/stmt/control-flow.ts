@@ -1,8 +1,8 @@
-import { ELR } from "retsac";
+import { BuilderDecorator, ELR } from "retsac";
 import { Data, Context } from "../../context.js";
 
-export function applyControlFlowStmts(ctx: Context) {
-  return (builder: ELR.IParserBuilder<Data>) => {
+export function applyControlFlowStmts(ctx: Context): BuilderDecorator<Data> {
+  return (builder) => {
     return builder
       .define(
         {

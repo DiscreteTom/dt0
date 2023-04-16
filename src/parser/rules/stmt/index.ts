@@ -1,5 +1,4 @@
-import { ELR } from "retsac";
-import { BuilderDecorator } from "retsac/out/parser/ELR";
+import { BuilderDecorator, ELR } from "retsac";
 import { Data, Context } from "../../context.js";
 import { applyControlFlowStmts } from "./control-flow.js";
 import { applyFnDefStmts } from "./fn-def.js";

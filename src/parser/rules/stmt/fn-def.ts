@@ -1,17 +1,17 @@
 import binaryen from "binaryen";
-import { ELR } from "retsac";
+import { BuilderDecorator, ELR } from "retsac";
 import { Data, Context } from "../../context.js";
 
-export function applyFnDefStmts(ctx: Context) {
-  return (builder: ELR.IParserBuilder<Data>) => {
+export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
+  return (builder) => {
     return builder
       .define(
         {
           fn_def: `
-        pub fn identifier@funcName '(' (param (',' param)*)? ')' ':' identifier@retTypeName '{'
-          stmt*
-        '}'
-      `,
+            pub fn identifier@funcName '(' (param (',' param)*)? ')' ':' identifier@retTypeName '{'
+              stmt*
+            '}'
+          `,
         },
         ELR.traverser<Data>(({ $ }) => {
           // create a new scope for this function

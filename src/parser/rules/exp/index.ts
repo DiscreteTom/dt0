@@ -1,9 +1,9 @@
-import { ELR } from "retsac";
+import { ELR, BuilderDecorator } from "retsac";
 import { Data, Context } from "../../context.js";
 import { applyMathRules } from "./math.js";
 
-export function applyExps(ctx: Context) {
-  return (builder: ELR.IParserBuilder<Data>) => {
+export function applyExps(ctx: Context): BuilderDecorator<Data> {
+  return (builder) => {
     return builder
       .use(applyMathRules(ctx))
       .define(
