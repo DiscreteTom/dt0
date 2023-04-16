@@ -1,13 +1,11 @@
-import * as fs from "fs";
-import { Compiler } from "../../src";
-import { fileURLToPath } from "url";
+import { build } from "../helper.js";
 
-const __filename = fileURLToPath(import.meta.url);
+const wasm = build(import.meta.url) as {
+  exports: {
+    test: (a: number) => number;
+  };
+};
 
 test("hello-world", () => {
-  const compiler = new Compiler({ checkAll: true });
-  const wasm = compiler.compile(
-    fs.readFileSync(__filename.replace("test.ts", "dt0"), "utf-8")
-  );
-  expect((wasm.exports.test as (a: number) => number)(123)).toBe(123 + 1);
+  expect(wasm.exports.test(123)).toBe(123 + 1);
 });
