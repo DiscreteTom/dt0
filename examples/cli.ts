@@ -7,5 +7,7 @@ import { Compiler } from "../src/index.js";
 
 const srcPath = process.argv[2];
 console.log(`Compiling ${srcPath}...`);
-const compiler = new Compiler();
-console.log(compiler.emitText(fs.readFileSync(srcPath, "utf-8")));
+const compiler = new Compiler({ profile: true });
+console.log(
+  compiler.emitText(fs.readFileSync(srcPath, "utf-8"), { profile: true })
+);
