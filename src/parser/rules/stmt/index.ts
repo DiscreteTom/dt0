@@ -14,6 +14,8 @@ export function applyStmts(ctx: Context): BuilderDecorator<Data> {
         {
           stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt | loop_stmt`,
         },
+        // commit the parsing result to prevent re-lexing
+        // this will accelerate the parsing process
         ELR.commit()
       )
       .define(
