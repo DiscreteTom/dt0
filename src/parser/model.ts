@@ -10,6 +10,9 @@ export type CompilerOptions = {
 };
 
 export type CompileOptions = {
+  /**
+   * Enable this for release build. Default: `true`.
+   */
   optimize?: boolean;
   /**
    * Enable this to print the time spent on parsing.
