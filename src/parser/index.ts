@@ -13,7 +13,13 @@ export class Compiler {
     this.ctx = new Context();
     if (options?.profile) console.time(`build parser`);
     this.parser = new ELR.AdvancedBuilder<Data>()
-      .entry("fn_def")
+      .entry("fn_defs")
+      .define(
+        { fn_defs: `fn_def+` },
+        ELR.traverser<Data>(({ $ }) => {
+          $(`fn_def`).map((s) => s.traverse()!);
+        })
+      )
       .use(applyAllRules(this.ctx))
       .use(applyResolvers)
       .build(lexer, {
