@@ -48,6 +48,12 @@ export class SymbolTable {
     return this;
   }
 
+  withinFunc(cb: () => void) {
+    this.enterFunc();
+    cb();
+    this.exitFunc();
+  }
+
   /**
    * Create a new local var in current function. This must be called after all param var's declaration.
    * Return the index of the new local var.

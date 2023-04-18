@@ -14,28 +14,28 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
           `,
         },
         ELR.traverser<Data>(({ $ }) => {
-          // create a new scope for this function
-          ctx.st.enterFunc();
+          ctx.st.withinFunc(() => {
+            // init params
+            $(`param`).forEach((p) => p.traverse());
+            // calculate stmts
+            const stmts = $(`stmt`).map((s) => s.traverse()!);
 
-          const funcName = $(`identifier`)[0].text!;
-
-          // init params
-          $(`param`).forEach((p) => p.traverse());
-          // calculate stmts
-          const stmts = $(`stmt`).map((s) => s.traverse()!);
-
-          ctx.mod.addFunction(
-            funcName, // function name
-            binaryen.createType(
-              ctx.st.getParamTypes().map((t) => binaryen.i32)
-            ), // params type
-            binaryen.i32,
-            ctx.st.getLocalTypes().map((t) => binaryen.i32), // local vars
-            ctx.mod.block(null, stmts) // body
-          );
-          ctx.mod.addFunctionExport(funcName, funcName);
-
-          ctx.st.exitFunc();
+            // add function to module and export it
+            const funcName = $(`identifier`)[0].text!;
+            ctx.mod.addFunction(
+              // function name
+              funcName,
+              // params type
+              binaryen.createType(ctx.st.getParamTypes()),
+              // return type
+              binaryen.i32,
+              // local vars
+              ctx.st.getLocalTypes(),
+              // body
+              ctx.mod.block(null, stmts)
+            );
+            ctx.mod.addFunctionExport(funcName, funcName);
+          });
         }).commit()
       )
       .define(
