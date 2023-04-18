@@ -19,13 +19,10 @@ export function applyStmts(ctx: Context): BuilderDecorator<Data> {
         ELR.commit()
       )
       .define(
-        {
-          assign_stmt: `let identifier '=' exp ';'`,
-        },
+        { assign_stmt: `let identifier '=' exp ';'` },
         ELR.traverser(({ $ }) => {
           const varName = $(`identifier`)[0].text!;
           const exp = $(`exp`)[0].traverse()!;
-
           const index = ctx.st.setLocal(varName); // update symbol table to record this var
           return ctx.mod.local.set(index, exp); // return the expression ref
         })
