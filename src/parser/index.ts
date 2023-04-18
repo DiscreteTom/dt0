@@ -50,7 +50,7 @@ export class Compiler {
     this.parse(code, options);
 
     const compiled = new WebAssembly.Module(this.ctx.mod.emitBinary());
-    return new WebAssembly.Instance(compiled, {});
+    return new WebAssembly.Instance(compiled, options?.importObject);
   }
 
   emitText(code: string, options?: CompileOptions) {

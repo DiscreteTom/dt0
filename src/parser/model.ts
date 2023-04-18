@@ -18,4 +18,8 @@ export type CompileOptions = {
    * Enable this to print the time spent on parsing.
    */
   profile?: boolean;
+  /**
+   * This will be passed to `WebAssembly.Instance`.
+   */
+  importObject?: WebAssembly.Imports;
 };
