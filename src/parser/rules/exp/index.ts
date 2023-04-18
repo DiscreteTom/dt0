@@ -16,8 +16,14 @@ export function applyExps(ctx: Context): BuilderDecorator<Data> {
       .define(
         { exp: `identifier` },
         ELR.traverser<Data>(({ children }) => {
-          const symbol = ctx.st.get(children![0].text!)!;
-          return ctx.mod.local.get(symbol.index, binaryen.i32);
+          const name = children![0].text!;
+          const symbol = ctx.st.get(name)!;
+          if (symbol.local)
+            return ctx.mod.local.get(symbol.index, binaryen.i32);
+          // else, it's global or undefined
+          if (symbol.index === undefined)
+            throw new Error(`Undefined symbol ${name}`);
+          return ctx.mod.global.get(name, binaryen.i32);
         })
       );
   };

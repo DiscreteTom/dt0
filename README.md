@@ -19,3 +19,4 @@ For simplicity, these limitations are enforced by design:
 - You can't define functions inside functions.
 - No type system, `i32` is the only type.
 - Every function is exported.
+- Local variables defined in if/while blocks are accessible outside the block.

@@ -24,8 +24,8 @@ export function applyStmts(ctx: Context): BuilderDecorator<Data> {
           const varName = $(`identifier`)[0].text!;
           const exp = $(`exp`)[0].traverse()!;
 
-          ctx.st.setLocal(varName); // update symbol table to record this var
-          return ctx.mod.local.set(ctx.st.get(varName)!.index, exp); // return the expression ref
+          const index = ctx.st.setLocal(varName); // update symbol table to record this var
+          return ctx.mod.local.set(index, exp); // return the expression ref
         })
       )
       .define(

@@ -1,91 +1,57 @@
 import binaryen from "binaryen";
 
-export type SymbolInfo = {
-  /** The index in local scope. */
-  index: number;
-  visible: boolean;
-};
+/** `var name => var index in the scope` */
+export type Scope = Map<string, number>;
 
-/** var name => symbol info */
-export type Scope = Map<string, SymbolInfo>;
+export type FuncInfo = {
+  scope: Scope;
+  paramCount: number;
+};
 
 export class SymbolTable {
   private readonly globalScope: Scope;
-  private funcScope?: Scope;
-  /** Local scopes (loop/condition block). */
-  private readonly outerScopeVarCount: number[];
-  private funcParamCount: number;
+  private currentFunc?: FuncInfo;
 
   constructor() {
     this.globalScope = new Map();
-    this.funcScope = undefined;
-    this.outerScopeVarCount = [];
-    this.funcParamCount = 0;
+    this.currentFunc = undefined;
   }
 
-  /** Create a new function scope. */
   enterFunc() {
-    if (this.funcScope !== undefined)
+    if (this.currentFunc !== undefined)
       throw new Error("Can't define function in function.");
 
-    this.funcScope = new Map();
-    this.funcParamCount = 0;
+    this.currentFunc = { scope: new Map(), paramCount: 0 };
     return this;
   }
 
-  /** Clear the current function scope. */
   exitFunc() {
-    if (this.funcScope === undefined)
-      throw new Error("No existing function scope.");
+    if (this.currentFunc === undefined)
+      throw new Error("No existing function scope to exit.");
 
-    this.funcScope = undefined;
-    this.funcParamCount = 0;
+    this.currentFunc = undefined;
     return this;
   }
 
-  /** Create a new local scope(e.g. loop/condition block). */
-  pushScope() {
-    if (this.funcScope == undefined)
-      throw new Error("Can't create local scope in global scope.");
-
-    this.outerScopeVarCount.push(this.funcScope.size);
-    return this;
-  }
-
-  /** Exit a local scope, make vars in that local scope invisible. */
-  popScope() {
-    if (this.funcScope == undefined)
-      throw new Error("No existing function scope.");
-
-    const count = this.outerScopeVarCount.pop();
-    if (count == undefined) throw new Error("No local scope to pop.");
-
-    this.funcScope.forEach((s) => {
-      if (s.index > count) s.visible = false;
-    });
-
-    return this;
-  }
-
-  /** Create a new local var in current scope. */
+  /**
+   * Create a new local var in current function. This must be called after all param var's declaration.
+   * Return the index of the new local var.
+   */
   setLocal(name: string) {
-    if (this.funcScope == undefined)
-      throw new Error("No existing function scope.");
+    if (this.currentFunc == undefined)
+      throw new Error("No existing function scope to set new local.");
 
-    this.funcScope.set(name, {
-      index: this.funcScope.size,
-      visible: true,
-    });
-
-    return this;
+    const index = this.currentFunc.scope.size;
+    this.currentFunc.scope.set(name, index);
+    return index;
   }
 
   /** Create a new param var in current function. This must be called before any local var's declaration. */
   setParam(name: string) {
-    this.setLocal(name);
-    this.funcParamCount++;
+    this.setLocal(name); // this will ensure currentFunc is not undefined
+    this.currentFunc!.paramCount++;
 
-    if (this.funcScope!.size != this.funcParamCount)
+    if (this.currentFunc!.scope.size != this.currentFunc!.paramCount)
       throw new Error("Param must be declared before local var.");
 
     return this;
@@ -93,43 +59,43 @@ export class SymbolTable {
 
   /** Create a new global var. */
   setGlobal(name: string) {
-    this.globalScope.set(name, {
-      index: this.globalScope.size,
-      visible: true,
-    });
+    this.globalScope.set(name, this.globalScope.size);
 
     return this;
   }
 
-  /** Try to find var by name in the function scope then global scope. */
-  get(name: string) {
-    if (this.funcScope != undefined) {
-      const res = this.funcScope.get(name);
-      if (res != undefined && res.visible) return res;
+  /**
+   * Try to find var by name in the function scope then global scope.
+   * If not found, the returned index will be `undefined`.
+   */
+  get(
+    name: string
+  ):
+    | { local: true; index: number }
+    | { local: false; index: number | undefined } {
+    if (this.currentFunc != undefined) {
+      const res = this.currentFunc.scope.get(name);
+      if (res != undefined) return { local: true, index: res };
     }
 
-    return this.globalScope.get(name);
+    return { local: false, index: this.globalScope.get(name) };
   }
 
   /** Return the param type array of the current function. */
   getParamTypes() {
-    if (this.funcScope == undefined)
-      throw new Error("No existing function scope.");
+    if (this.currentFunc == undefined)
+      throw new Error("No existing function scope to get param types.");
 
-    return [...this.funcScope.values()]
-      .sort((a, b) => a.index - b.index)
-      .filter((v) => v.index < this.funcParamCount)
-      .map((v) => binaryen.i32);
+    return Array(this.currentFunc.paramCount).fill(binaryen.i32) as number[];
   }
 
   /** Return the local var type array of the current function. */
   getLocalTypes() {
-    if (this.funcScope == undefined)
-      throw new Error("No existing function scope.");
+    if (this.currentFunc == undefined)
+      throw new Error("No existing function scope to get local types.");
 
-    return [...this.funcScope.values()]
-      .sort((a, b) => a.index - b.index)
-      .filter((v) => v.index >= this.funcParamCount)
-      .map((v) => binaryen.i32);
+    return Array(
+      this.currentFunc.scope.size - this.currentFunc.paramCount
+    ).fill(binaryen.i32) as number[];
   }
 }
