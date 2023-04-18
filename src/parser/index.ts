@@ -5,53 +5,61 @@ import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
 import { CompileOptions, CompilerOptions } from "./model.js";
 
+function profile<T>(name: string, enabled: boolean | undefined, cb: () => T) {
+  if (!enabled) return cb();
+  console.time(name);
+  const res = cb();
+  console.timeEnd(name);
+  return res;
+}
+
 export class Compiler {
   private readonly parser: ELR.Parser<Data>;
   private readonly ctx: Context;
 
   constructor(options?: CompilerOptions) {
     this.ctx = new Context();
-    if (options?.profile) console.time(`build parser`);
-    this.parser = new ELR.AdvancedBuilder<Data>()
-      .entry("fn_defs")
-      .define(
-        { fn_defs: `fn_def+` },
-        ELR.traverser<Data>(({ $ }) => {
-          $(`fn_def`).map((s) => s.traverse()!);
+
+    // build parser
+    this.parser = profile(`build parser`, options?.profile, () =>
+      new ELR.AdvancedBuilder<Data>()
+        .entry("fn_defs")
+        .define(
+          { fn_defs: `fn_def+` },
+          ELR.traverser<Data>(({ $ }) => {
+            $(`fn_def`).map((s) => s.traverse()!);
+          })
+        )
+        .use(applyAllRules(this.ctx))
+        .use(applyResolvers)
+        .build(lexer, {
+          checkAll: options?.checkAll, // for dev
+          debug: options?.debug, // for debug
+          // generateResolvers: "builder", // for debug
         })
-      )
-      .use(applyAllRules(this.ctx))
-      .use(applyResolvers)
-      .build(lexer, {
-        checkAll: options?.checkAll, // for dev
-        debug: options?.debug, // for debug
-        // generateResolvers: "builder", // for debug
-      });
-    if (options?.profile) console.timeEnd(`build parser`);
+    );
   }
 
   private parse(code: string, options?: CompileOptions) {
-    if (options?.profile) console.time(`parse`);
-    const res = this.parser.reset().parseAll(code);
-    if (options?.profile) console.timeEnd(`parse`);
+    // parse input to AST
+    const res = profile(`parse`, options?.profile, () =>
+      this.parser.reset().parseAll(code)
+    );
     if (!res.accept) throw new Error("Parse error");
 
-    if (options?.profile) console.time(`traverse`);
-    res.buffer[0].traverse();
-    if (options?.profile) console.timeEnd(`traverse`);
+    // traverse AST to generate binaryen module
+    profile(`traverse`, options?.profile, () => res.buffer[0].traverse());
 
-    if (options?.optimize ?? true) {
-      if (options?.profile) console.time(`optimize`);
-      this.ctx.mod.optimize();
-      if (options?.profile) console.timeEnd(`optimize`);
-    }
-
-    if (options?.profile) console.time(`validate`);
-    const valid = this.ctx.mod.validate();
-    if (options?.profile) console.timeEnd(`validate`);
-    if (!valid) throw new Error("Module is invalid");
+    // optimize and validate
+    if (options?.optimize ?? true)
+      profile(`optimize`, options?.profile, () => this.ctx.mod.optimize());
+    if (!profile(`validate`, options?.profile, () => this.ctx.mod.validate()))
+      throw new Error("Module is invalid");
   }
 
+  /**
+   * Compile code to WebAssembly instance.
+   */
   compile(code: string, options?: CompileOptions) {
     this.parse(code, options);
 
@@ -59,6 +67,9 @@ export class Compiler {
     return new WebAssembly.Instance(compiled, options?.importObject);
   }
 
+  /**
+   * Compile code to WebAssembly text format.
+   */
   emitText(code: string, options?: CompileOptions) {
     this.parse(code, options);
     return this.ctx.mod.emitText();
