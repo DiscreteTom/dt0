@@ -1,19 +1,28 @@
 import binaryen from "binaryen";
 
-/** `var name => var index in the scope` */
-export type Scope = Map<string, number>;
-
 export type FuncInfo = {
-  scope: Scope;
+  /**
+   * `name => local index`. We need the local index to get/set local var in binaryen.
+   */
+  locals: Map<string, number>;
+  /**
+   * How many params this function has.
+   */
   paramCount: number;
 };
 
+/**
+ * We need this symbol table to keep track of the existence/index of variables, both global and local.
+ */
 export class SymbolTable {
-  private readonly globalScope: Scope;
+  /**
+   * For global var, we only need to keep track of the var's name, because we use name to find a global var in binaryen.
+   */
+  private readonly globals: Set<string>;
   private currentFunc?: FuncInfo;
 
   constructor() {
-    this.globalScope = new Map();
+    this.globals = new Set();
     this.currentFunc = undefined;
   }
 
@@ -21,7 +30,7 @@ export class SymbolTable {
     if (this.currentFunc !== undefined)
       throw new Error("Can't define function in function.");
 
-    this.currentFunc = { scope: new Map(), paramCount: 0 };
+    this.currentFunc = { locals: new Map(), paramCount: 0 };
     return this;
   }
 
@@ -41,8 +50,10 @@ export class SymbolTable {
     if (this.currentFunc == undefined)
       throw new Error("No existing function scope to set new local.");
 
-    const index = this.currentFunc.scope.size;
-    this.currentFunc.scope.set(name, index);
+    // TODO: check name duplication
+
+    const index = this.currentFunc.locals.size;
+    this.currentFunc.locals.set(name, index);
     return index;
   }
 
@@ -51,7 +62,7 @@ export class SymbolTable {
     this.setLocal(name); // this will ensure currentFunc is not undefined
     this.currentFunc!.paramCount++;
 
-    if (this.currentFunc!.scope.size != this.currentFunc!.paramCount)
+    if (this.currentFunc!.locals.size != this.currentFunc!.paramCount)
       throw new Error("Param must be declared before local var.");
 
     return this;
@@ -59,8 +70,8 @@ export class SymbolTable {
 
   /** Create a new global var. */
   setGlobal(name: string) {
-    this.globalScope.set(name, this.globalScope.size);
-
+    // TODO: check name duplication
+    this.globals.add(name);
     return this;
   }
 
@@ -70,15 +81,13 @@ export class SymbolTable {
    */
   get(
     name: string
-  ):
-    | { local: true; index: number }
-    | { local: false; index: number | undefined } {
+  ): { local: true; index: number } | { local: false; exist: boolean } {
     if (this.currentFunc != undefined) {
-      const res = this.currentFunc.scope.get(name);
+      const res = this.currentFunc.locals.get(name);
       if (res != undefined) return { local: true, index: res };
     }
 
-    return { local: false, index: this.globalScope.get(name) };
+    return { local: false, exist: this.globals.has(name) };
   }
 
   /** Return the param type array of the current function. */
@@ -95,7 +104,7 @@ export class SymbolTable {
       throw new Error("No existing function scope to get local types.");
 
     return Array(
-      this.currentFunc.scope.size - this.currentFunc.paramCount
+      this.currentFunc.locals.size - this.currentFunc.paramCount
     ).fill(binaryen.i32) as number[];
   }
 }

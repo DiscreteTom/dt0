@@ -19,8 +19,7 @@ export function applyUnaryOpStmts(ctx: Context): BuilderDecorator<Data> {
               )
             );
           // else, it's global or undefined
-          if (varInfo.index === undefined)
-            throw new Error(`Undefined symbol ${name}`);
+          if (!varInfo.exist) throw new Error(`Undefined symbol ${name}`);
           return ctx.mod.global.set(
             name,
             ctx.mod.i32.add(
@@ -44,8 +43,7 @@ export function applyUnaryOpStmts(ctx: Context): BuilderDecorator<Data> {
               )
             );
           // else, it's global or undefined
-          if (varInfo.index === undefined)
-            throw new Error(`Undefined symbol ${name}`);
+          if (!varInfo.exist) throw new Error(`Undefined symbol ${name}`);
           return ctx.mod.global.set(
             name,
             ctx.mod.i32.sub(

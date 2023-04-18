@@ -21,8 +21,7 @@ export function applyExps(ctx: Context): BuilderDecorator<Data> {
           if (symbol.local)
             return ctx.mod.local.get(symbol.index, binaryen.i32);
           // else, it's global or undefined
-          if (symbol.index === undefined)
-            throw new Error(`Undefined symbol ${name}`);
+          if (!symbol.exist) throw new Error(`Undefined symbol ${name}`);
           return ctx.mod.global.get(name, binaryen.i32);
         })
       );
