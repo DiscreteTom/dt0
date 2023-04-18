@@ -18,7 +18,6 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
           ctx.st.enterFunc();
 
           const funcName = $(`funcName`)[0].text!;
-          const retTypeName = $(`retTypeName`)[0].text!;
 
           // init params
           $(`param`).forEach((p) => p.traverse());
@@ -27,9 +26,11 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
 
           ctx.mod.addFunction(
             funcName, // function name
-            binaryen.createType(ctx.st.getParamTypes().map((t) => t.prototype)), // params type
-            ctx.st.get(retTypeName)!.type.prototype, // return type
-            ctx.st.getLocalTypes().map((t) => t.prototype), // local vars
+            binaryen.createType(
+              ctx.st.getParamTypes().map((t) => binaryen.i32)
+            ), // params type
+            binaryen.i32,
+            ctx.st.getLocalTypes().map((t) => binaryen.i32), // local vars
             ctx.mod.block(null, stmts) // body
           );
           ctx.mod.addFunctionExport(funcName, funcName);
@@ -41,10 +42,7 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
         { param: `identifier@varName ':' identifier@typeName` },
         ELR.traverser<Data>(({ $ }) => {
           // add param to symbol table
-          ctx.st.setParam(
-            $(`varName`)[0].text!,
-            ctx.st.get($(`typeName`)[0].text!)!.type
-          );
+          ctx.st.setParam($(`varName`)[0].text!);
         })
       );
   };

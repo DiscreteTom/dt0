@@ -1,16 +1,17 @@
-export type SymbolInfo<T> = {
-  type: T;
+import binaryen from "binaryen";
+
+export type SymbolInfo = {
   /** The index in local scope. */
   index: number;
   visible: boolean;
 };
 
 /** var name => symbol info */
-export type Scope<T> = Map<string, SymbolInfo<T>>;
+export type Scope = Map<string, SymbolInfo>;
 
-export class SymbolTable<T> {
-  private readonly globalScope: Scope<T>;
-  private funcScope?: Scope<T>;
+export class SymbolTable {
+  private readonly globalScope: Scope;
+  private funcScope?: Scope;
   /** Local scopes (loop/condition block). */
   private readonly outerScopeVarCount: number[];
   private funcParamCount: number;
@@ -67,12 +68,11 @@ export class SymbolTable<T> {
   }
 
   /** Create a new local var in current scope. */
-  setLocal(name: string, type: T) {
+  setLocal(name: string) {
     if (this.funcScope == undefined)
       throw new Error("No existing function scope.");
 
     this.funcScope.set(name, {
-      type,
       index: this.funcScope.size,
       visible: true,
     });
@@ -81,8 +81,8 @@ export class SymbolTable<T> {
   }
 
   /** Create a new param var in current function. This must be called before any local var's declaration. */
-  setParam(name: string, type: T) {
-    this.setLocal(name, type);
+  setParam(name: string) {
+    this.setLocal(name);
     this.funcParamCount++;
 
     if (this.funcScope!.size != this.funcParamCount)
@@ -92,9 +92,8 @@ export class SymbolTable<T> {
   }
 
   /** Create a new global var. */
-  setGlobal(name: string, type: T) {
+  setGlobal(name: string) {
     this.globalScope.set(name, {
-      type,
       index: this.globalScope.size,
       visible: true,
     });
@@ -120,7 +119,7 @@ export class SymbolTable<T> {
     return [...this.funcScope.values()]
       .sort((a, b) => a.index - b.index)
       .filter((v) => v.index < this.funcParamCount)
-      .map((v) => v.type);
+      .map((v) => binaryen.i32);
   }
 
   /** Return the local var type array of the current function. */
@@ -131,6 +130,6 @@ export class SymbolTable<T> {
     return [...this.funcScope.values()]
       .sort((a, b) => a.index - b.index)
       .filter((v) => v.index >= this.funcParamCount)
-      .map((v) => v.type);
+      .map((v) => binaryen.i32);
   }
 }

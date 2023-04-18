@@ -11,3 +11,8 @@ Since retsac already makes it very easy to create a compiler, I recommend you to
 For lexical specs, see [this file](https://github.com/DiscreteTom/dt0/blob/main/src/lexer/index.ts).
 
 For grammar rules, see [this folder](https://github.com/DiscreteTom/dt0/tree/main/src/parser/rules).
+
+## Limitations
+
+- You can't define functions inside functions.
+- No type system, `i32` is the only type.

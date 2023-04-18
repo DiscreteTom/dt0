@@ -1,6 +1,7 @@
 import { ELR, BuilderDecorator } from "retsac";
 import { Data, Context } from "../../context.js";
 import { applyMathRules } from "./math.js";
+import binaryen from "binaryen";
 
 export function applyExps(ctx: Context): BuilderDecorator<Data> {
   return (builder) => {
@@ -16,7 +17,7 @@ export function applyExps(ctx: Context): BuilderDecorator<Data> {
         { exp: `identifier` },
         ELR.traverser<Data>(({ children }) => {
           const symbol = ctx.st.get(children![0].text!)!;
-          return ctx.mod.local.get(symbol.index, symbol.type.prototype);
+          return ctx.mod.local.get(symbol.index, binaryen.i32);
         })
       );
   };

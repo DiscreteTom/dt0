@@ -22,10 +22,9 @@ export function applyStmts(ctx: Context): BuilderDecorator<Data> {
         },
         ELR.traverser(({ $ }) => {
           const varName = $(`varName`)[0].text!;
-          const typeInfo = ctx.st.get($(`typeName`)[0].text!)!;
           const exp = $(`exp`)[0].traverse()!;
 
-          ctx.st.setLocal(varName, typeInfo.type); // update symbol table to record this var
+          ctx.st.setLocal(varName); // update symbol table to record this var
           return ctx.mod.local.set(ctx.st.get(varName)!.index, exp); // return the expression ref
         })
       )
