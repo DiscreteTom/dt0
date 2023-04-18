@@ -10,6 +10,7 @@ export function applyExps(ctx: Context): BuilderDecorator<Data> {
       .define(
         { exp: `integer` },
         ELR.traverser<Data>(({ children }) =>
+          // TODO: check if the number is in range
           ctx.mod.i32.const(parseInt(children![0].text!))
         )
       )
@@ -17,7 +18,7 @@ export function applyExps(ctx: Context): BuilderDecorator<Data> {
         { exp: `identifier` },
         ELR.traverser<Data>(({ children }) => {
           const name = children![0].text!;
-          const symbol = ctx.st.get(name)!;
+          const symbol = ctx.st.get(name);
           if (symbol.local)
             return ctx.mod.local.get(symbol.index, binaryen.i32);
           // else, it's global or undefined
