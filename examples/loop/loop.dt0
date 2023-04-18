@@ -1,6 +1,26 @@
-fn test(a) {
+// test do-while
+fn test1(a, b) {
   do {
     a--;
+    b++;
   } while a;
-  return a;
+  return b;
+}
+
+// test while
+fn test2(a, b) {
+  while a {
+    a--;
+    b++;
+  }
+  return b;
+}
+
+// test assign var in loop and access from outside of the loop
+fn test3(a, b) {
+  while a {
+    a--;
+    let c = a - b;
+  }
+  return c;
 }

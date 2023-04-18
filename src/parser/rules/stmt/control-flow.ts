@@ -23,11 +23,46 @@ export function applyControlFlowStmts(ctx: Context): BuilderDecorator<Data> {
         { loop_stmt: `do '{' stmt* '}' while exp ';'` },
         ELR.traverser<Data>(({ $ }) => {
           const stmts = $(`stmt`).map((s) => s.traverse()!);
-          const exp = $(`exp`)[0].traverse()!;
+          const condition = $(`exp`)[0].traverse()!;
           const label = ctx.lg.next();
+          /**
+           * loop $label {
+           *   block { // no label
+           *     stmt*
+           *     br_if $label condition // if condition is true, jump to the start of the loop
+           *   }
+           * }
+           */
           return ctx.mod.loop(
             label,
-            ctx.mod.block(null, stmts.concat(ctx.mod.br(label, exp)))
+            ctx.mod.block(null, stmts.concat(ctx.mod.br(label, condition)))
+          );
+        })
+      )
+      .define(
+        { loop_stmt: `while exp '{' stmt* '}'` },
+        ELR.traverser<Data>(({ $ }) => {
+          const stmts = $(`stmt`).map((s) => s.traverse()!);
+          const condition = $(`exp`)[0].traverse()!;
+          const loopLabel = ctx.lg.next();
+          const blockLabel = ctx.lg.next();
+          /**
+           * loop $loopLabel {
+           *   block $blockLabel {
+           *     br_if $blockLabel !condition // if condition is false, jump to the end of the block
+           *     stmt*
+           *     br $loopLabel // jump to the start of the loop
+           *   }
+           * }
+           */
+          return ctx.mod.loop(
+            loopLabel,
+            ctx.mod.block(
+              blockLabel,
+              [ctx.mod.br(blockLabel, ctx.mod.i32.eqz(condition))]
+                .concat(stmts)
+                .concat(ctx.mod.br(loopLabel))
+            )
           );
         })
       );
