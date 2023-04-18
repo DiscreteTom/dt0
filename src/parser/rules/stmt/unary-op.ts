@@ -1,5 +1,5 @@
 import { BuilderDecorator, ELR } from "retsac";
-import { Data, Context } from "../../context.js";
+import { Data, Context } from "../../context/index.js";
 import binaryen from "binaryen";
 
 export function applyUnaryOpStmts(ctx: Context): BuilderDecorator<Data> {

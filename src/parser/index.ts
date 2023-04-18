@@ -1,6 +1,6 @@
 import { ELR } from "retsac";
 import { lexer } from "../lexer/index.js";
-import { Data, Context } from "./context.js";
+import { Data, Context } from "./context/index.js";
 import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
 import { CompileOptions, CompilerOptions } from "./model.js";

@@ -5,6 +5,9 @@ import { SymbolTable } from "./symbol-table.js";
 /** The data of ASTNode. */
 export type Data = binaryen.ExpressionRef;
 
+/**
+ * The context of the compiler.
+ */
 export class Context {
   /** The module. */
   readonly mod: binaryen.Module;

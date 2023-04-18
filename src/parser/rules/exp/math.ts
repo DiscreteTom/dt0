@@ -1,5 +1,5 @@
 import { ELR, BuilderDecorator } from "retsac";
-import { Context, Data } from "../../context.js";
+import { Context, Data } from "../../context/index.js";
 
 export function applyMathRules(ctx: Context): BuilderDecorator<Data> {
   return (builder) => {

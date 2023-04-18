@@ -1,5 +1,5 @@
 import { BuilderDecorator, ELR } from "retsac";
-import { Data, Context } from "../../context.js";
+import { Data, Context } from "../../context/index.js";
 
 export function applyControlFlowStmts(ctx: Context): BuilderDecorator<Data> {
   return (builder) => {
