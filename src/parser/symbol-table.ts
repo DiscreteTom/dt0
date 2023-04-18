@@ -26,6 +26,9 @@ export class SymbolTable {
     this.currentFunc = undefined;
   }
 
+  /**
+   * This will check if there's already a function scope.
+   */
   enterFunc() {
     if (this.currentFunc !== undefined)
       throw new Error("Can't define function in function.");
@@ -34,6 +37,9 @@ export class SymbolTable {
     return this;
   }
 
+  /**
+   * This will check if there's already a function scope.
+   */
   exitFunc() {
     if (this.currentFunc === undefined)
       throw new Error("No existing function scope to exit.");
@@ -45,21 +51,26 @@ export class SymbolTable {
   /**
    * Create a new local var in current function. This must be called after all param var's declaration.
    * Return the index of the new local var.
+   * This will check if there's already a function scope, and if the name is duplicated.
    */
   setLocal(name: string) {
     if (this.currentFunc == undefined)
       throw new Error("No existing function scope to set new local.");
 
-    // TODO: check name duplication
+    if (this.currentFunc.locals.has(name))
+      throw new Error(`Duplicate local var name ${name}.`);
 
     const index = this.currentFunc.locals.size;
     this.currentFunc.locals.set(name, index);
     return index;
   }
 
-  /** Create a new param var in current function. This must be called before any local var's declaration. */
+  /**
+   * Create a new param var in current function. This must be called before any local var's declaration.
+   * This will check if there's already a function scope, and if the name is duplicated.
+   */
   setParam(name: string) {
-    this.setLocal(name); // this will ensure currentFunc is not undefined
+    this.setLocal(name); // this will ensure currentFunc is not undefined and the name is not duplicated
     this.currentFunc!.paramCount++;
 
     if (this.currentFunc!.locals.size != this.currentFunc!.paramCount)
@@ -68,16 +79,19 @@ export class SymbolTable {
     return this;
   }
 
-  /** Create a new global var. */
+  /**
+   * Create a new global var.
+   * This will check if the name is duplicated.
+   */
   setGlobal(name: string) {
-    // TODO: check name duplication
+    if (this.globals.has(name))
+      throw new Error(`Duplicate global var name ${name}.`);
     this.globals.add(name);
     return this;
   }
 
   /**
    * Try to find var by name in the function scope then global scope.
-   * If not found, the returned index will be `undefined`.
    */
   get(
     name: string
