@@ -14,5 +14,8 @@ For grammar rules, see [this folder](https://github.com/DiscreteTom/dt0/tree/mai
 
 ## Limitations
 
+For simplicity, these limitations are enforced by design:
+
 - You can't define functions inside functions.
 - No type system, `i32` is the only type.
+- Every function is exported.

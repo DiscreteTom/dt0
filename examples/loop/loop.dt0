@@ -1,4 +1,4 @@
-pub fn test(a: i32): i32 {
+fn test(a: i32) {
   do {
     a--;
   } while a;

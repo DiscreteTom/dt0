@@ -8,7 +8,7 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
       .define(
         {
           fn_def: `
-            pub fn identifier@funcName '(' (param (',' param)*)? ')' ':' identifier@retTypeName '{'
+            fn identifier '(' (param (',' param)*)? ')' '{'
               stmt*
             '}'
           `,
@@ -17,7 +17,7 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
           // create a new scope for this function
           ctx.st.enterFunc();
 
-          const funcName = $(`funcName`)[0].text!;
+          const funcName = $(`identifier`)[0].text!;
 
           // init params
           $(`param`).forEach((p) => p.traverse());
