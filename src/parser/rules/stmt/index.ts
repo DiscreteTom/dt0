@@ -18,10 +18,10 @@ export function applyStmts(ctx: Context): BuilderDecorator<Data> {
       )
       .define(
         {
-          assign_stmt: `let identifier@varName ':' identifier@typeName '=' exp ';'`,
+          assign_stmt: `let identifier '=' exp ';'`,
         },
         ELR.traverser(({ $ }) => {
-          const varName = $(`varName`)[0].text!;
+          const varName = $(`identifier`)[0].text!;
           const exp = $(`exp`)[0].traverse()!;
 
           ctx.st.setLocal(varName); // update symbol table to record this var

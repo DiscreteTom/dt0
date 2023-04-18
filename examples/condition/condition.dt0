@@ -1,12 +1,12 @@
-fn test(condition: i32) {
-  let a: i32 = 0;
-  let b: i32 = 1;
+fn test(condition) {
+  let a = 0;
+  let b = 1;
 
   if condition {
-    let c: i32 = 2;
+    let c = 2;
     return a + b + c;
   } else {
-    let d: i32 = 3;
+    let d = 3;
     return a - b - d;
   }
 }

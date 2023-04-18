@@ -39,10 +39,10 @@ export function applyFnDefStmts(ctx: Context): BuilderDecorator<Data> {
         }).commit()
       )
       .define(
-        { param: `identifier@varName ':' identifier@typeName` },
+        { param: `identifier` },
         ELR.traverser<Data>(({ $ }) => {
           // add param to symbol table
-          ctx.st.setParam($(`varName`)[0].text!);
+          ctx.st.setParam($(`identifier`)[0].text!);
         })
       );
   };
