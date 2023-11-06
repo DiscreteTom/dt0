@@ -3,10 +3,10 @@ import { buildLexer } from "../lexer/index.js";
 import { Data, Context } from "../context/index.js";
 import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
-import { CompilerOptions } from "../model.js";
+import { CompilerBuildOptions } from "../model.js";
 import { profile } from "../utils.js";
 
-export function buildParser(ctx: Context, options?: CompilerOptions) {
+export function buildParser(ctx: Context, options?: CompilerBuildOptions) {
   return profile(
     `build parser`,
     options?.profile,

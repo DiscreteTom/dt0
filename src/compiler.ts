@@ -1,5 +1,5 @@
 import { Context } from "./context";
-import { CompileOptions, CompilerOptions } from "./model";
+import { CompileOptions, CompilerBuildOptions } from "./model";
 import { buildParser } from "./parser";
 import { profile } from "./utils";
 
@@ -7,7 +7,7 @@ export class Compiler {
   private readonly parser: ReturnType<typeof buildParser>;
   private readonly ctx: Context;
 
-  constructor(options?: CompilerOptions) {
+  constructor(options?: CompilerBuildOptions) {
     this.ctx = new Context();
 
     // build parser

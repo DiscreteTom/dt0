@@ -1,5 +1,4 @@
-// TODO: rename to BuildOptions?
-export type CompilerOptions = {
+export type CompilerBuildOptions = {
   /**
    * Enable this to print debug info.
    * @default false
