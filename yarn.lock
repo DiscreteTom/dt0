@@ -2136,10 +2136,10 @@ resolve@^1.20.0:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-retsac@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.9.0.tgz#32ffa01dfcd2a926034b45967221c4e86dafa4dd"
-  integrity sha512-fQAf6r+bnNqoazJWOCLgfz5J2IRmEfpJ7lcIn5NGBoXgj8BxaL6J9CLv1EfcwImE/ZSeoN4qa94OpjLuUUk7jA==
+retsac@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.14.0.tgz#d9321446bd67df96b0b1be3e9f25bcf4a2fa9a5f"
+  integrity sha512-ZoXa7bjNsai/BwLWPd1/o5GiOyx+VmfdlQqJzESn6uPOfDvfi6xhUirfWIhrsIHZC20UvR6A4KitpMHvVCv5qg==
 
 rimraf@^5.0.0:
   version "5.0.0"
