@@ -1,12 +1,12 @@
 import { Lexer } from "retsac";
 
 export const lexer = new Lexer.Builder()
-  .ignore(/^\s/) // ignore blank chars
-  .ignore(Lexer.from_to("//", "\n", true)) // single line comment
-  .ignore(Lexer.from_to("/*", "*/", true)) // multiline comment
+  .ignore(Lexer.whitespaces()) // ignore blank chars
+  .ignore(Lexer.comment("//")) // single line comment
+  .ignore(Lexer.comment("/*", "*/")) // multiline comment
   .define(
     // keywords
-    Lexer.wordType("fn", "return", "let", "if", "else", "do", "while")
+    Lexer.wordKind("fn", "return", "let", "if", "else", "do", "while")
   )
   .define({
     integer: /^([1-9][0-9]*|0)/,
