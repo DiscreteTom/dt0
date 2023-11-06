@@ -1,5 +1,5 @@
 import { ELR, Lexer } from "retsac";
-import { Data, Context } from "../../context/index.js";
+import { Data, Context } from "../../../context/index.js";
 import binaryen from "binaryen";
 
 export function applyUnaryOpStmts<

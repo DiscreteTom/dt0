@@ -1,5 +1,5 @@
 import { ELR, Lexer } from "retsac";
-import { Data } from "./context";
+import { Data } from "../context/index.js";
 
 export function applyResolvers<
   Kinds extends string,

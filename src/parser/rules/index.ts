@@ -1,5 +1,5 @@
 import { ELR, Lexer } from "retsac";
-import { Context, Data } from "../context/index.js";
+import { Context, Data } from "../../context/index.js";
 import { applyExps } from "./exp/index.js";
 import { applyStmts } from "./stmt/index.js";
 
