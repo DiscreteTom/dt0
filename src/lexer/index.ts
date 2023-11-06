@@ -12,8 +12,8 @@ export function buildLexer() {
       Lexer.wordKind("fn", "return", "let", "if", "else", "do", "while")
     )
     .define({
-      integer: /^([1-9][0-9]*|0)/, // TODO: set error
-      identifier: /^[a-zA-Z_]\w*/, // TODO: exclude preserved words
+      integer: /([1-9][0-9]*|0)/, // TODO: set error
+      identifier: /[a-zA-Z_]\w*/, // TODO: exclude preserved words
     })
     .anonymous(
       Lexer.exact("&&", "||", "++", "--"), // double char operator
