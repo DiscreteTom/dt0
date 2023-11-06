@@ -9,8 +9,6 @@ export class Compiler {
 
   constructor(options?: CompilerBuildOptions) {
     this.ctx = new Context();
-
-    // build parser
     this.parser = buildParser(this.ctx, options);
   }
 
