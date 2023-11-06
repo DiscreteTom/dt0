@@ -1,14 +1,28 @@
-import { BuilderDecorator, ELR } from "retsac";
+import { ELR, Lexer } from "retsac";
 import { Data, Context } from "../../context/index.js";
 import binaryen from "binaryen";
 
-export function applyUnaryOpStmts(ctx: Context): BuilderDecorator<Data> {
-  return (builder) => {
+export function applyUnaryOpStmts<
+  Kinds extends string,
+  ErrorType,
+  LexerDataBindings extends Lexer.GeneralTokenDataBinding,
+  LexerActionState,
+  LexerErrorType
+>(ctx: Context) {
+  return (
+    builder: ELR.IParserBuilder<
+      Kinds,
+      Data,
+      ErrorType,
+      LexerDataBindings,
+      LexerActionState,
+      LexerErrorType
+    >
+  ) => {
     return builder
-      .define(
-        { incr_stmt: `('++' identifier | identifier '++') ';'` },
-        ELR.traverser(({ $ }) => {
-          const name = $(`identifier`)[0].text!;
+      .define({ incr_stmt: `('++' identifier | identifier '++') ';'` }, (d) =>
+        d.traverser(({ $ }) => {
+          const name = $(`identifier`)!.text!;
           const varInfo = ctx.st.get(name);
           if (varInfo.local)
             return ctx.mod.local.set(
@@ -29,10 +43,9 @@ export function applyUnaryOpStmts(ctx: Context): BuilderDecorator<Data> {
           );
         })
       )
-      .define(
-        { decr_stmt: `('--' identifier | identifier '--') ';'` },
-        ELR.traverser(({ $ }) => {
-          const name = $(`identifier`)[0].text!;
+      .define({ decr_stmt: `('--' identifier | identifier '--') ';'` }, (d) =>
+        d.traverser(({ $ }) => {
+          const name = $(`identifier`)!.text!;
           const varInfo = ctx.st.get(name);
           if (varInfo.local)
             return ctx.mod.local.set(

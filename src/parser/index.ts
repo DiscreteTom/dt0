@@ -13,31 +13,39 @@ function profile<T>(name: string, enabled: boolean | undefined, cb: () => T) {
   return res;
 }
 
+function buildParser(ctx: Context, options?: CompilerOptions) {
+  return profile(
+    `build parser`,
+    options?.profile,
+    () =>
+      new ELR.AdvancedBuilder()
+        .data<Data>()
+        .lexer(lexer)
+        .define({ fn_defs: `fn_def+` }, (d) =>
+          d.traverser(({ $$ }) => {
+            $$(`fn_def`).map((s) => s.traverse()!);
+          })
+        )
+        .use(applyAllRules(ctx))
+        .use(applyResolvers)
+        .build({
+          entry: "fn_defs",
+          checkAll: options?.checkAll, // for dev
+          debug: options?.debug, // for debug
+          // generateResolvers: "builder", // for debug
+        }).parser
+  );
+}
+
 export class Compiler {
-  private readonly parser: ELR.Parser<Data>;
+  private readonly parser: ReturnType<typeof buildParser>;
   private readonly ctx: Context;
 
   constructor(options?: CompilerOptions) {
     this.ctx = new Context();
 
     // build parser
-    this.parser = profile(`build parser`, options?.profile, () =>
-      new ELR.AdvancedBuilder<Data>()
-        .entry("fn_defs")
-        .define(
-          { fn_defs: `fn_def+` },
-          ELR.traverser<Data>(({ $ }) => {
-            $(`fn_def`).map((s) => s.traverse()!);
-          })
-        )
-        .use(applyAllRules(this.ctx))
-        .use(applyResolvers)
-        .build(lexer, {
-          checkAll: options?.checkAll, // for dev
-          debug: options?.debug, // for debug
-          // generateResolvers: "builder", // for debug
-        })
-    );
+    this.parser = buildParser(this.ctx, options);
   }
 
   private parse(code: string, options?: CompileOptions) {
