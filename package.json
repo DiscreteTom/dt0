@@ -7,7 +7,6 @@
   "scripts": {
     "build": "yarn clean && tsc",
     "clean": "rimraf out",
-    "build:example": "yarn clean && tsc --build example.tsconfig.json && copyfiles -u 1 examples/**/*.dt0 out/examples",
     "dev": "tsc && jest",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
@@ -20,7 +19,6 @@
     "@types/node": "^18.0.4",
     "@typescript-eslint/eslint-plugin": "^6.9.1",
     "@typescript-eslint/parser": "^6.9.1",
-    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "eslint": "^8.53.0",
     "jest": "^29.4.3",
