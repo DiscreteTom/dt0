@@ -5,6 +5,7 @@ import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
 import { CompilerBuildOptions } from "../model.js";
 import { profile } from "../utils.js";
+import { serialized } from "./serialized.js";
 
 export function newParserBuilder(ctx: Context) {
   return new ELR.AdvancedBuilder()
@@ -26,6 +27,7 @@ export function buildParser(ctx: Context, options?: CompilerBuildOptions) {
         entry,
         checkAll: options?.checkAll, // for dev
         debug: options?.debug, // for debug
-      }).parser
+        hydrate: serialized as any, // TODO: fix type
+      }).parser,
   );
 }

@@ -13,7 +13,6 @@ export type CompilerBuildOptions = {
    * Enable this to print the time spent on parser building.
    * @default false
    */
-  // TODO: serialize parser
   profile?: boolean;
 };
 
