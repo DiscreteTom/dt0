@@ -11,8 +11,8 @@ export const lexer = new Lexer.Builder()
     Lexer.wordKind("fn", "return", "let", "if", "else", "do", "while")
   )
   .define({
-    integer: /^([1-9][0-9]*|0)/,
-    identifier: /^[a-zA-Z_]\w*/,
+    integer: /^([1-9][0-9]*|0)/, // TODO: set error
+    identifier: /^[a-zA-Z_]\w*/, // TODO: exclude preserved words
   })
   .anonymous(
     Lexer.exact("&&", "||", "++", "--"), // double char operator
