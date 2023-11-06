@@ -7,6 +7,7 @@ export type Data = binaryen.ExpressionRef;
 
 /**
  * The context of the compiler.
+ * This is used in `ASTNode.traverse`.
  */
 export class Context {
   /** The module. */
