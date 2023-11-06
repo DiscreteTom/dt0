@@ -1,7 +1,7 @@
 export function profile<T>(
   name: string,
   enabled: boolean | undefined,
-  cb: () => T
+  cb: () => T,
 ) {
   if (!enabled) return cb();
   console.time(name);

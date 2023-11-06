@@ -1,12 +1,12 @@
-import { ELR, Lexer } from "retsac";
-import { Data, Context } from "../../../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Data, Context } from "../../../context/index.js";
 
 export function applyControlFlowStmts<
   Kinds extends string,
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
@@ -16,7 +16,7 @@ export function applyControlFlowStmts<
       LexerDataBindings,
       LexerActionState,
       LexerErrorType
-    >
+    >,
   ) => {
     return builder
       .define(
@@ -31,9 +31,9 @@ export function applyControlFlowStmts<
             return ctx.mod.if(
               exp,
               ctx.mod.block(null, ifTrue),
-              ctx.mod.block(null, ifFalse)
+              ctx.mod.block(null, ifFalse),
             );
-          })
+          }),
       )
       .define({ loop_stmt: `do '{' stmt* '}' while exp ';'` }, (d) =>
         d.traverser(({ $$, $ }) => {
@@ -50,9 +50,9 @@ export function applyControlFlowStmts<
            */
           return ctx.mod.loop(
             label,
-            ctx.mod.block(null, stmts.concat(ctx.mod.br(label, condition)))
+            ctx.mod.block(null, stmts.concat(ctx.mod.br(label, condition))),
           );
-        })
+        }),
       )
       .define({ loop_stmt: `while exp '{' stmt* '}'` }, (d) =>
         d.traverser(({ $$, $ }) => {
@@ -75,10 +75,10 @@ export function applyControlFlowStmts<
               blockLabel,
               [ctx.mod.br(blockLabel, ctx.mod.i32.eqz(condition))]
                 .concat(stmts)
-                .concat(ctx.mod.br(loopLabel))
-            )
+                .concat(ctx.mod.br(loopLabel)),
+            ),
           );
-        })
+        }),
       );
   };
 }

@@ -1,5 +1,5 @@
-import { ELR, Lexer } from "retsac";
-import { Context, Data } from "../../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Context, Data } from "../../context/index.js";
 import { applyExps } from "./exp/index.js";
 import { applyStmts } from "./stmt/index.js";
 
@@ -8,7 +8,7 @@ export function applyAllRules<
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
@@ -18,7 +18,7 @@ export function applyAllRules<
       LexerDataBindings,
       LexerActionState,
       LexerErrorType
-    >
+    >,
   ) => {
     return builder.use(applyStmts(ctx)).use(applyExps(ctx));
   };

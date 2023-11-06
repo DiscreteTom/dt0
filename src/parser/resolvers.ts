@@ -1,12 +1,12 @@
-import { ELR, Lexer } from "retsac";
-import { Data } from "../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Data } from "../context/index.js";
 
 export function applyResolvers<
   Kinds extends string,
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(
   builder: ELR.IParserBuilder<
     Kinds | "exp",
@@ -15,11 +15,11 @@ export function applyResolvers<
     LexerDataBindings,
     LexerActionState,
     LexerErrorType
-  >
+  >,
 ) {
   return builder.priority(
     { exp: `'-' exp` }, // highest priority
     [{ exp: `exp '*' exp` }, { exp: `exp '/' exp` }, { exp: `exp '%' exp` }],
-    [{ exp: `exp '+' exp` }, { exp: `exp '-' exp` }] // lowest priority
+    [{ exp: `exp '+' exp` }, { exp: `exp '-' exp` }], // lowest priority
   );
 }

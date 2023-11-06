@@ -1,13 +1,13 @@
 import binaryen from "binaryen";
-import { ELR, Lexer } from "retsac";
-import { Data, Context } from "../../../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Data, Context } from "../../../context/index.js";
 
 export function applyFnDefStmts<
   Kinds extends string,
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
@@ -17,7 +17,7 @@ export function applyFnDefStmts<
       LexerDataBindings,
       LexerActionState,
       LexerErrorType
-    >
+    >,
   ) => {
     return builder
       .define(
@@ -49,18 +49,18 @@ export function applyFnDefStmts<
                   // local vars
                   ctx.st.getLocalTypes(),
                   // body
-                  ctx.mod.block(null, stmts)
+                  ctx.mod.block(null, stmts),
                 );
                 ctx.mod.addFunctionExport(funcName, funcName);
               });
             })
-            .commit()
+            .commit(),
       )
       .define({ param: `identifier` }, (d) =>
         d.traverser(({ $ }) => {
           // add param to symbol table
           ctx.st.setParam($(`identifier`)!.text!);
-        })
+        }),
       );
   };
 }

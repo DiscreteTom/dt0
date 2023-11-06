@@ -1,5 +1,5 @@
-import { ELR, Lexer } from "retsac";
-import { Data, Context } from "../../../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Data, Context } from "../../../context/index.js";
 import { applyMathRules } from "./math.js";
 import binaryen from "binaryen";
 
@@ -8,7 +8,7 @@ export function applyExps<
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
@@ -18,15 +18,15 @@ export function applyExps<
       LexerDataBindings,
       LexerActionState,
       LexerErrorType
-    >
+    >,
   ) => {
     return builder
       .use(applyMathRules(ctx))
       .define({ exp: `integer` }, (d) =>
         d.traverser(({ children }) =>
           // TODO: check if the number is in range
-          ctx.mod.i32.const(parseInt(children![0].text!))
-        )
+          ctx.mod.i32.const(parseInt(children![0].text!)),
+        ),
       )
       .define({ exp: `identifier` }, (d) =>
         d.traverser(({ children }) => {
@@ -37,7 +37,7 @@ export function applyExps<
           // else, it's global or undefined
           if (!symbol.exist) throw new Error(`Undefined symbol ${name}`);
           return ctx.mod.global.get(name, binaryen.i32);
-        })
+        }),
       );
   };
 }

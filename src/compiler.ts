@@ -1,5 +1,5 @@
 import { Context } from "./context/index.js";
-import { CompileOptions, CompilerBuildOptions } from "./model.js";
+import type { CompileOptions, CompilerBuildOptions } from "./model.js";
 import { buildParser } from "./parser/index.js";
 import { profile } from "./utils.js";
 
@@ -15,7 +15,7 @@ export class Compiler {
   private parse(code: string, options?: CompileOptions) {
     // parse input to AST
     const res = profile(`parse`, options?.profile, () =>
-      this.parser.reset().parseAll(code)
+      this.parser.reset().parseAll(code),
     );
     if (!res.accept) throw new Error("Parse error");
 

@@ -1,5 +1,5 @@
-import { ELR, Lexer } from "retsac";
-import { Data, Context } from "../../../context/index.js";
+import type { ELR, Lexer } from "retsac";
+import type { Data, Context } from "../../../context/index.js";
 import binaryen from "binaryen";
 
 export function applyUnaryOpStmts<
@@ -7,7 +7,7 @@ export function applyUnaryOpStmts<
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
   LexerActionState,
-  LexerErrorType
+  LexerErrorType,
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
@@ -17,7 +17,7 @@ export function applyUnaryOpStmts<
       LexerDataBindings,
       LexerActionState,
       LexerErrorType
-    >
+    >,
   ) => {
     return builder
       .define({ incr_stmt: `('++' identifier | identifier '++') ';'` }, (d) =>
@@ -29,8 +29,8 @@ export function applyUnaryOpStmts<
               varInfo.index,
               ctx.mod.i32.add(
                 ctx.mod.local.get(varInfo.index, binaryen.i32),
-                ctx.mod.i32.const(1)
-              )
+                ctx.mod.i32.const(1),
+              ),
             );
           // else, it's global or undefined
           if (!varInfo.exist) throw new Error(`Undefined symbol ${name}`);
@@ -38,10 +38,10 @@ export function applyUnaryOpStmts<
             name,
             ctx.mod.i32.add(
               ctx.mod.global.get(name, binaryen.i32),
-              ctx.mod.i32.const(1)
-            )
+              ctx.mod.i32.const(1),
+            ),
           );
-        })
+        }),
       )
       .define({ decr_stmt: `('--' identifier | identifier '--') ';'` }, (d) =>
         d.traverser(({ $ }) => {
@@ -52,8 +52,8 @@ export function applyUnaryOpStmts<
               varInfo.index,
               ctx.mod.i32.sub(
                 ctx.mod.local.get(varInfo.index, binaryen.i32),
-                ctx.mod.i32.const(1)
-              )
+                ctx.mod.i32.const(1),
+              ),
             );
           // else, it's global or undefined
           if (!varInfo.exist) throw new Error(`Undefined symbol ${name}`);
@@ -61,10 +61,10 @@ export function applyUnaryOpStmts<
             name,
             ctx.mod.i32.sub(
               ctx.mod.global.get(name, binaryen.i32),
-              ctx.mod.i32.const(1)
-            )
+              ctx.mod.i32.const(1),
+            ),
           );
-        })
+        }),
       );
   };
 }

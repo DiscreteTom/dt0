@@ -1,9 +1,9 @@
 import { ELR } from "retsac";
 import { buildLexer } from "../lexer/index.js";
-import { Data, Context } from "../context/index.js";
+import type { Data, Context } from "../context/index.js";
 import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
-import { CompilerBuildOptions } from "../model.js";
+import type { CompilerBuildOptions } from "../model.js";
 import { profile } from "../utils.js";
 import { serialized } from "./serialized.js";
 
@@ -27,6 +27,7 @@ export function buildParser(ctx: Context, options?: CompilerBuildOptions) {
         entry,
         checkAll: options?.checkAll, // for dev
         debug: options?.debug, // for debug
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         hydrate: serialized as any, // TODO: fix type
       }).parser,
   );
