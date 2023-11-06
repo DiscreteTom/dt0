@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "yarn clean && tsc",
     "clean": "rimraf out",
+    "build": "yarn clean && tsc",
     "dev": "tsc && jest",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
