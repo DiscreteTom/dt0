@@ -1,7 +1,7 @@
-import { Context } from "./context";
-import { CompileOptions, CompilerBuildOptions } from "./model";
-import { buildParser } from "./parser";
-import { profile } from "./utils";
+import { Context } from "./context/index.js";
+import { CompileOptions, CompilerBuildOptions } from "./model.js";
+import { buildParser } from "./parser/index.js";
+import { profile } from "./utils.js";
 
 export class Compiler {
   private readonly parser: ReturnType<typeof buildParser>;
