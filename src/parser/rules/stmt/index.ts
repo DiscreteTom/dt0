@@ -33,7 +33,7 @@ export function applyStmts<
         // this will accelerate the parsing process
         (d) => d.commit(),
       )
-      .define({ assign_stmt: `let identifier '=' exp ';'` }, (d) =>
+      .define({ assign_stmt: `identifier '=' exp ';'` }, (d) =>
         d.traverser(({ $ }) => {
           const varName = $(`identifier`)!.text!;
           const exp = $(`exp`)!.traverse()!;
