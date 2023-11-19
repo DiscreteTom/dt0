@@ -1,7 +1,6 @@
 import { ELR } from "retsac";
 import { buildLexer } from "../lexer/index.js";
 import type { Data, Context } from "../context/index.js";
-import { applyResolvers } from "./resolvers.js";
 import { applyAllRules } from "./rules/index.js";
 import type { CompilerBuildOptions } from "../model.js";
 import { profile } from "../utils.js";
@@ -12,8 +11,7 @@ export function newParserBuilder(ctx: Context) {
     .data<Data>()
     .lexer(buildLexer())
     .define({ fn_defs: `fn_def+` }) // default traverser will traverse all children
-    .use(applyAllRules(ctx))
-    .use(applyResolvers);
+    .use(applyAllRules(ctx));
 }
 
 export const entry = "fn_defs";

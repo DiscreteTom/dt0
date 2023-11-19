@@ -48,6 +48,15 @@ export function applyMathRules<
         d.traverser(({ children }) =>
           ctx.mod.i32.sub(ctx.mod.i32.const(0), children[1].traverse()!),
         ),
+      )
+      .priority(
+        { exp: `'-' exp` }, // highest priority
+        [
+          { exp: `exp '*' exp` },
+          { exp: `exp '/' exp` },
+          { exp: `exp '%' exp` },
+        ],
+        [{ exp: `exp '+' exp` }, { exp: `exp '-' exp` }], // lowest priority
       );
   };
 }
