@@ -27,12 +27,12 @@ export function applyExps<
           ({ children }) =>
             // TODO: check if the number is in i32 range
             // TODO: use token data to get the number (with ASTNode children selector)
-            ctx.mod.i32.const(parseInt(children![0].text!)), // [[integer to expression]]
+            ctx.mod.i32.const(parseInt(children[0].text!)), // [[integer to expression]]
         ),
       )
       .define({ exp: `identifier` }, (d) =>
         d.traverser(({ children }) => {
-          const name = children![0].text!;
+          const name = children[0].text!;
           const symbol = ctx.st.get(name);
           if (symbol.local)
             return ctx.mod.local.get(symbol.index, binaryen.i32);
