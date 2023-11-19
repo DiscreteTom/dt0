@@ -20,31 +20,34 @@ export function buildLexer() {
     .define(Lexer.wordKind(...preserved))
     .define({
       integer: Lexer.javascript
-        .numericLiteral()
+        .numericLiteral() // use lexer utils for easy error handling
         .data((ctx) => {
-          const value = ctx.output.data.invalid
+          const raw = ctx.output.data.invalid
             ? NaN
             : Number(ctx.output.content);
           return {
-            /** If `true`, the numeric literal is invalid. */
-            invalid: ctx.output.data.invalid,
             /**
-             * The integer's value.
-             * `undefined` if the integer is invalid or the number is a float.
+             * The raw value, must be a number, might be `NaN`.
              */
-            integer: Number.isInteger(value) ? value : undefined,
+            raw,
             /**
-             * `true` if the number is a float.
+             * The integer's value, must be an integer.
+             * If this is not an integer (`NaN` or `float`), it will be `0`.
              */
-            float: !Number.isInteger(value),
+            value: Number.isInteger(raw) ? raw : 0,
           };
         })
-        .check((ctx) =>
-          ctx.output.data.invalid
-            ? "Invalid numeric literal"
-            : ctx.output.data.float
-            ? "Float is not supported"
-            : undefined,
+        .check(
+          (ctx) =>
+            Number.isNaN(ctx.output.data.raw)
+              ? "Invalid numeric literal"
+              : !Number.isInteger(ctx.output.data.raw)
+              ? "Only integer is supported"
+              : undefined,
+          // don't check if the number is in range
+          // because when parsing the parser will check it
+          // and convert the value to a suitable type like i8/i32/u32/...
+          // see [[@integer to expression]]
         ),
       identifier: Lexer.Action.from(identifier)
         // exclude preserved words

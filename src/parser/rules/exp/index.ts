@@ -23,9 +23,11 @@ export function applyExps<
     return builder
       .use(applyMathRules(ctx))
       .define({ exp: `integer` }, (d) =>
-        d.traverser(({ children }) =>
-          // TODO: check if the number is in range
-          ctx.mod.i32.const(parseInt(children![0].text!)),
+        d.traverser(
+          ({ children }) =>
+            // TODO: check if the number is in i32 range
+            // TODO: use token data to get the number (with ASTNode children selector)
+            ctx.mod.i32.const(parseInt(children![0].text!)), // [[integer to expression]]
         ),
       )
       .define({ exp: `identifier` }, (d) =>
