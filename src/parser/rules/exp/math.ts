@@ -1,6 +1,13 @@
 import type { ELR, Lexer } from "retsac";
 import type { Context, Data } from "../../../context/index.js";
 
+export const add = Object.freeze({ exp: `exp '+' exp` });
+export const sub = Object.freeze({ exp: `exp "-" exp` });
+export const mul = Object.freeze({ exp: `exp "*" exp` });
+export const div = Object.freeze({ exp: `exp "/" exp` });
+export const rem = Object.freeze({ exp: `exp "%" exp` });
+export const neg = Object.freeze({ exp: `"-" exp` });
+
 export function applyMathRules<
   Kinds extends string,
   ErrorType,
@@ -17,15 +24,8 @@ export function applyMathRules<
       LexerActionState,
       LexerErrorType
     >,
-  ) => {
-    const add = { exp: `exp '+' exp` };
-    const sub = { exp: `exp "-" exp` };
-    const mul = { exp: `exp "*" exp` };
-    const div = { exp: `exp "/" exp` };
-    const rem = { exp: `exp "%" exp` };
-    const neg = { exp: `"-" exp` };
-
-    return builder
+  ) =>
+    builder
       .define(add, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.add(children[0].traverse()!, children[2].traverse()!),
@@ -55,11 +55,5 @@ export function applyMathRules<
         d.traverser(({ children }) =>
           ctx.mod.i32.sub(ctx.mod.i32.const(0), children[1].traverse()!),
         ),
-      )
-      .priority(
-        neg, // highest priority
-        [mul, div, rem],
-        [add, sub], // lowest priority
       );
-  };
 }

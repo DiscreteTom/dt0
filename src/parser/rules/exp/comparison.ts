@@ -1,6 +1,13 @@
 import type { ELR, Lexer } from "retsac";
 import type { Context, Data } from "../../../context/index.js";
 
+export const eq = Object.freeze({ exp: `exp '==' exp` }); // equal
+export const ne = Object.freeze({ exp: `exp "!=" exp` }); // not equal
+export const gt = Object.freeze({ exp: `exp ">" exp` }); // greater than
+export const lt = Object.freeze({ exp: `exp "<" exp` }); // less than
+export const ge = Object.freeze({ exp: `exp ">=" exp` }); // greater than or equal
+export const le = Object.freeze({ exp: `exp "<=" exp` }); // less than or equal
+
 export function applyComparisonRules<
   Kinds extends string,
   ErrorType,
@@ -17,15 +24,8 @@ export function applyComparisonRules<
       LexerActionState,
       LexerErrorType
     >,
-  ) => {
-    const eq = { exp: `exp '==' exp` }; // equal
-    const ne = { exp: `exp "!=" exp` }; // not equal
-    const gt = { exp: `exp ">" exp` }; // greater than
-    const lt = { exp: `exp "<" exp` }; // less than
-    const ge = { exp: `exp ">=" exp` }; // greater than or equal
-    const le = { exp: `exp "<=" exp` }; // less than or equal
-
-    return builder
+  ) =>
+    builder
       .define(eq, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.eq(children[0].traverse()!, children[2].traverse()!),
@@ -55,7 +55,5 @@ export function applyComparisonRules<
         d.traverser(({ children }) =>
           ctx.mod.i32.le_s(ctx.mod.i32.const(0), children[1].traverse()!),
         ),
-      )
-      .priority([lt, le, gt, ge], [eq, ne]);
-  };
+      );
 }
