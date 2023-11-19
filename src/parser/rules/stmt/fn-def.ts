@@ -30,7 +30,7 @@ export function applyFnDefStmts<
         },
         (d) =>
           d
-            .traverser(({ $$ }) => {
+            .traverser(({ $$, $ }) => {
               ctx.st.withinFunc(() => {
                 // init params
                 $$(`param`).forEach((p) => p.traverse());
@@ -38,7 +38,7 @@ export function applyFnDefStmts<
                 const stmts = $$(`stmt`).map((s) => s.traverse()!);
 
                 // add function to module and export it
-                const funcName = $$(`identifier`)[0].text!;
+                const funcName = $(`identifier`)!.text!;
                 ctx.mod.addFunction(
                   // function name
                   funcName,
