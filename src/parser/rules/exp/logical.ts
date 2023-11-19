@@ -1,7 +1,7 @@
 import type { ELR, Lexer } from "retsac";
 import type { Context, Data } from "../../../context/index.js";
 
-export function applyMathRules<
+export function applyLogicalRules<
   Kinds extends string,
   ErrorType,
   LexerDataBindings extends Lexer.GeneralTokenDataBinding,
