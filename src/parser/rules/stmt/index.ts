@@ -2,7 +2,6 @@ import type { ELR, Lexer } from "retsac";
 import type { Data, Context } from "../../../context/index.js";
 import { applyControlFlowStmts } from "./control-flow.js";
 import { applyFnDefStmts } from "./fn-def.js";
-import { applyUnaryOpStmts } from "./unary-op.js";
 
 export function applyStmts<
   Kinds extends string,
@@ -24,7 +23,6 @@ export function applyStmts<
     return builder
       .use(applyFnDefStmts(ctx))
       .use(applyControlFlowStmts(ctx))
-      .use(applyUnaryOpStmts(ctx))
       .define(
         {
           stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt | loop_stmt`,
