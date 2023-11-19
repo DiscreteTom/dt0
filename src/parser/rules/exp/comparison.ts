@@ -10,7 +10,7 @@ export function applyComparisonRules<
 >(ctx: Context) {
   return (
     builder: ELR.IParserBuilder<
-      Kinds,
+      Kinds | "exp", // ensure `exp` is defined
       Data,
       ErrorType,
       LexerDataBindings,
