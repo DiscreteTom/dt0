@@ -19,6 +19,8 @@ export class Compiler {
     );
     if (!res.accept) throw new Error("Parse error");
 
+    // TODO: print all errors
+
     // traverse AST to generate binaryen module
     profile(`traverse`, options?.profile, () => res.buffer[0].traverse());
 
