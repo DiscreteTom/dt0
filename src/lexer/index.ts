@@ -54,8 +54,9 @@ export function buildLexer() {
     .anonymous(
       // operators
       // as a best practice, put the longer operators first
-      Lexer.exact("&&", "||"), // logical
+      Lexer.exact("&&", "||"), // double char logical
       Lexer.exact("==", "!=", "<=", ">="), // double char comparison
+      Lexer.exact("!"), // single char logical
       Lexer.exact("="), // assignment
       Lexer.exact("<", ">"), // single char comparison
       Lexer.exact("+", "-", "*", "/", "%"), // arithmetic
