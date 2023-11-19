@@ -18,45 +18,48 @@ export function applyMathRules<
       LexerErrorType
     >,
   ) => {
+    const add = { exp: `exp '+' exp` };
+    const sub = { exp: `exp "-" exp` };
+    const mul = { exp: `exp "*" exp` };
+    const div = { exp: `exp "/" exp` };
+    const rem = { exp: `exp "%" exp` };
+    const neg = { exp: `"-" exp` };
+
     return builder
-      .define({ exp: `exp '+' exp` }, (d) =>
+      .define(add, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.add(children[0].traverse()!, children[2].traverse()!),
         ),
       )
-      .define({ exp: `exp "-" exp` }, (d) =>
+      .define(sub, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.sub(children[0].traverse()!, children[2].traverse()!),
         ),
       )
-      .define({ exp: `exp "*" exp` }, (d) =>
+      .define(mul, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.mul(children[0].traverse()!, children[2].traverse()!),
         ),
       )
-      .define({ exp: `exp "/" exp` }, (d) =>
+      .define(div, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.div_s(children[0].traverse()!, children[2].traverse()!),
         ),
       )
-      .define({ exp: `exp "%" exp` }, (d) =>
+      .define(rem, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.rem_s(children[0].traverse()!, children[2].traverse()!),
         ),
       )
-      .define({ exp: `"-" exp` }, (d) =>
+      .define(neg, (d) =>
         d.traverser(({ children }) =>
           ctx.mod.i32.sub(ctx.mod.i32.const(0), children[1].traverse()!),
         ),
       )
       .priority(
-        { exp: `'-' exp` }, // highest priority
-        [
-          { exp: `exp '*' exp` },
-          { exp: `exp '/' exp` },
-          { exp: `exp '%' exp` },
-        ],
-        [{ exp: `exp '+' exp` }, { exp: `exp '-' exp` }], // lowest priority
+        neg, // highest priority
+        [mul, div, rem],
+        [add, sub], // lowest priority
       );
   };
 }
