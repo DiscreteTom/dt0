@@ -25,7 +25,7 @@ export function applyStmts<
       .use(applyControlFlowStmts(ctx))
       .define(
         {
-          stmt: `assign_stmt | ret_stmt | incr_stmt | decr_stmt | if_stmt | loop_stmt`,
+          stmt: `assign_stmt | ret_stmt | if_stmt | loop_stmt`,
         },
         // commit the parsing result to prevent re-lexing
         // this will accelerate the parsing process
