@@ -15,12 +15,3 @@ fn test2(a, b) {
   }
   return b;
 }
-
-// test assign var in loop and access from outside of the loop
-fn test3(a, b) {
-  while a {
-    a--;
-    let c = a - b;
-  }
-  return c;
-}
