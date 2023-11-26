@@ -19,7 +19,7 @@ export class Context {
 
   constructor() {
     this.mod = new binaryen.Module();
-    this.st = new SymbolTable();
+    this.st = new SymbolTable(this.mod);
     this.lg = new LabelGenerator();
 
     // set global symbols

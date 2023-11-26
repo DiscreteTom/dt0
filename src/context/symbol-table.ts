@@ -20,9 +20,11 @@ export class SymbolTable {
    */
   private readonly globals: Set<string>;
   private currentFunc?: FuncInfo;
+  private readonly mod: binaryen.Module;
 
-  constructor() {
+  constructor(mod: binaryen.Module) {
     this.globals = new Set();
+    this.mod = mod;
     this.currentFunc = undefined;
   }
 
@@ -31,7 +33,7 @@ export class SymbolTable {
    */
   enterFunc() {
     if (this.currentFunc !== undefined)
-      throw new Error("Can't define function in function.");
+      throw new Error("Can't define function in function."); // TODO: don't throw error? record it in ASTNode?
 
     this.currentFunc = { locals: new Map(), paramCount: 0 };
     return this;
@@ -42,7 +44,7 @@ export class SymbolTable {
    */
   exitFunc() {
     if (this.currentFunc === undefined)
-      throw new Error("No existing function scope to exit.");
+      throw new Error("No existing function scope to exit."); // TODO: don't throw error? record it in ASTNode?
 
     this.currentFunc = undefined;
     return this;
@@ -55,31 +57,46 @@ export class SymbolTable {
   }
 
   /**
-   * Create a new local var in current function. This must be called after all param var's declaration.
-   * Return the index of the new local var.
-   * This will check if there's already a function scope, and if the name is duplicated.
+   * Return the expression ref.
    */
-  setLocal(name: string) {
-    if (this.currentFunc === undefined)
-      throw new Error("No existing function scope to set new local.");
+  set(name: string, value: binaryen.ExpressionRef): binaryen.ExpressionRef {
+    if (this.currentFunc !== undefined) {
+      // current function exists, try to find in local first
+      const index = this.currentFunc.locals.get(name);
+      if (index !== undefined) {
+        // found in local, just update the local var's value
+        return this.mod.local.set(index, value);
+      } else {
+        // not found in local, try to find in global
+        if (this.globals.has(name)) {
+          // set global var
+          return this.mod.global.set(name, value);
+        }
+        // not in global, create a new local var
+        const index = this.currentFunc.locals.size;
+        this.currentFunc.locals.set(name, index);
+        return this.mod.local.set(index, value);
+      }
+    }
 
-    if (this.currentFunc.locals.has(name))
-      throw new Error(`Duplicate local var name ${name}.`);
-
-    const index = this.currentFunc.locals.size;
-    this.currentFunc.locals.set(name, index);
-    return index;
+    // else, not in function, set in global
+    this.globals.add(name);
+    return this.mod.global.set(name, value);
   }
 
   /**
    * Create a new param var in current function. This must be called before any local var's declaration.
-   * This will check if there's already a function scope, and if the name is duplicated.
+   * This will check if there's already a function scope.
    */
   setParam(name: string) {
-    this.setLocal(name); // this will ensure currentFunc is not undefined and the name is not duplicated
-    this.currentFunc!.paramCount++;
+    if (this.currentFunc === undefined)
+      throw new Error("No existing function scope to set new param.");
 
-    if (this.currentFunc!.locals.size !== this.currentFunc!.paramCount)
+    const index = this.currentFunc.locals.size;
+    this.currentFunc.locals.set(name, index);
+    this.currentFunc.paramCount++;
+
+    if (this.currentFunc.locals.size !== this.currentFunc.paramCount)
       throw new Error("Param must be declared before local var.");
 
     return this;

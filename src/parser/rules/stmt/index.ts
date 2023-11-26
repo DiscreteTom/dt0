@@ -33,10 +33,9 @@ export function applyStmts<
       )
       .define({ assign_stmt: `identifier '=' exp ';'` }, (d) =>
         d.traverser(({ $ }) => {
-          const varName = $(`identifier`)!.text!;
-          const exp = $(`exp`)!.traverse()!;
-          const index = ctx.st.setLocal(varName); // update symbol table to record this var
-          return ctx.mod.local.set(index, exp); // return the expression ref
+          const name = $(`identifier`)!.text!;
+          const value = $(`exp`)!.traverse()!;
+          return ctx.st.set(name, value);
         }),
       )
       .define({ ret_stmt: `return exp ';'` }, (d) =>
