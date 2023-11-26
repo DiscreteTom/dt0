@@ -1,12 +1,7 @@
-fn test(condition) {
-  let a = 0;
-  let b = 1;
-
+fn test(a, b, condition) {
   if condition {
-    let c = 2;
-    return a + b + c;
+    return a + b;
   } else {
-    let d = 3;
-    return a - b - d;
+    return a - b;
   }
 }
