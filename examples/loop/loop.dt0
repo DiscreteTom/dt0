@@ -1,8 +1,8 @@
 // test do-while
 fn test1(a, b) {
   do {
-    a--;
-    b++;
+    a = a - 1;
+    b = b + 1;
   } while a;
   return b;
 }
@@ -10,8 +10,8 @@ fn test1(a, b) {
 // test while
 fn test2(a, b) {
   while a {
-    a--;
-    b++;
+    a = a - 1;
+    b = b + 1;
   }
   return b;
 }
