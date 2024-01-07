@@ -2623,10 +2623,10 @@ resolve@^1.20.0:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-retsac@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.14.0.tgz#d9321446bd67df96b0b1be3e9f25bcf4a2fa9a5f"
-  integrity sha512-ZoXa7bjNsai/BwLWPd1/o5GiOyx+VmfdlQqJzESn6uPOfDvfi6xhUirfWIhrsIHZC20UvR6A4KitpMHvVCv5qg==
+retsac@^0.16.1:
+  version "0.16.1"
+  resolved "https://registry.npmmirror.com/retsac/-/retsac-0.16.1.tgz#a68d04136ae06c37131a373131ac1086b64574f6"
+  integrity sha512-jA6DXpesk7KQaZx3df3aKaVF5nhYhEHRqrbzVuYceD15MOXSA+SLG5PdyHfU2rD552m4I51FGy5WtKYd5tGIVg==
 
 reusify@^1.0.4:
   version "1.0.4"
