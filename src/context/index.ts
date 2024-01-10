@@ -2,8 +2,7 @@ import binaryen from "binaryen";
 import { LabelGenerator } from "./label-gen.js";
 import { SymbolTable } from "./symbol-table.js";
 import type { buildLexer } from "../lexer/index.js";
-import type { Lexer } from "retsac";
-import type { IParserBuilder } from "retsac/out/parser/ELR/index.js";
+import type { ELR, Lexer } from "retsac";
 
 export type LexerErrorType = string;
 export type LexerActionState = never;
@@ -14,7 +13,7 @@ export type LexerDataBindings = ReturnType<
   : never;
 export type ASTData = binaryen.ExpressionRef;
 export type ParserError = never;
-export type PartialParserBuilder<NTs extends string> = IParserBuilder<
+export type PartialParserBuilder<NTs extends string> = ELR.IParserBuilder<
   NTs,
   ASTData,
   ParserError,
