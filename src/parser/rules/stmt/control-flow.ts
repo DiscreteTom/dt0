@@ -1,4 +1,4 @@
-import type { PartialParserBuilder } from "../../../context/index.js";
+import type { PartialParserBuilder } from "../../context/index.js";
 
 export function applyControlFlowStmts<NTs extends string>(
   builder: PartialParserBuilder<NTs>,

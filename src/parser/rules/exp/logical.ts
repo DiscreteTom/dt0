@@ -1,4 +1,4 @@
-import type { PartialParserBuilder } from "../../../context/index.js";
+import type { PartialParserBuilder } from "../../context/index.js";
 
 export const and = Object.freeze({ exp: `exp '&&' exp` });
 export const or = Object.freeze({ exp: `exp "||" exp` });

@@ -6,7 +6,7 @@ import type {
   LexerActionState,
   LexerDataBindings,
   LexerErrorType,
-} from "../lexer/index.js";
+} from "../../lexer/index.js";
 
 export type ASTData = binaryen.ExpressionRef;
 export type ParserError = never;

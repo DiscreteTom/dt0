@@ -1,5 +1,5 @@
 import binaryen from "binaryen";
-import type { PartialParserBuilder } from "../../../context/index.js";
+import type { PartialParserBuilder } from "../../context/index.js";
 
 export function applyFnDefStmts<NTs extends string>(
   builder: PartialParserBuilder<NTs>,

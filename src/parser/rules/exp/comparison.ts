@@ -1,4 +1,4 @@
-import type { PartialParserBuilder } from "../../../context/index.js";
+import type { PartialParserBuilder } from "../../context/index.js";
 
 export const eq = Object.freeze({ exp: `exp '==' exp` }); // equal
 export const ne = Object.freeze({ exp: `exp "!=" exp` }); // not equal
