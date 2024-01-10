@@ -1,5 +1,7 @@
 import { Lexer } from "retsac";
-import type { LexerErrorType } from "../context/index.js";
+
+export type LexerErrorType = string;
+export type LexerActionState = never;
 
 /**
  * Preserved words in the language.
@@ -65,3 +67,9 @@ export function buildLexer() {
     )
     .build();
 }
+
+export type LexerDataBindings = ReturnType<
+  typeof buildLexer
+> extends Lexer.ILexer<infer DataBindings, LexerActionState, LexerErrorType>
+  ? DataBindings
+  : never;
