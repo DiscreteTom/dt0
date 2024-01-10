@@ -1,24 +1,6 @@
 import binaryen from "binaryen";
 import { LabelGenerator } from "./label-gen.js";
 import { SymbolTable } from "./symbol-table.js";
-import type { ELR } from "retsac";
-import type {
-  LexerActionState,
-  LexerDataBindings,
-  LexerErrorType,
-} from "../../lexer/index.js";
-
-export type ASTData = binaryen.ExpressionRef;
-export type ParserError = never;
-export type PartialParserBuilder<NTs extends string> = ELR.IParserBuilder<
-  NTs,
-  ASTData,
-  ParserError,
-  LexerDataBindings,
-  LexerActionState,
-  LexerErrorType,
-  Context
->;
 
 /**
  * The context of the compiler.

@@ -1,5 +1,5 @@
 import { ELR } from "retsac";
-import type { ASTData } from "./context/index.js";
+import type { ASTData } from "./types.js";
 import { Context } from "./context/index.js";
 import { buildLexer } from "../lexer/index.js";
 import { applyAllRules } from "./rules/index.js";

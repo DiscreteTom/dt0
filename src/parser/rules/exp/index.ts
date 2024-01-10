@@ -2,7 +2,7 @@ import { add, applyMathRules, div, mul, neg, rem, sub } from "./math.js";
 import binaryen from "binaryen";
 import { and, applyLogicalRules, not, or } from "./logical.js";
 import { applyComparisonRules, eq, ge, gt, le, lt, ne } from "./comparison.js";
-import type { PartialParserBuilder } from "../../context/index.js";
+import type { PartialParserBuilder } from "../../types.js";
 
 export function applyExps<NTs extends string>(
   builder: PartialParserBuilder<NTs>,

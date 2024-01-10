@@ -1,4 +1,4 @@
-import type { PartialParserBuilder } from "../../context/index.js";
+import type { PartialParserBuilder } from "../../types.js";
 
 export const add = Object.freeze({ exp: `exp '+' exp` });
 export const sub = Object.freeze({ exp: `exp "-" exp` });

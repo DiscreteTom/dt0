@@ -1,6 +1,6 @@
 import { applyControlFlowStmts } from "./control-flow.js";
 import { applyFnDefStmts } from "./fn-def.js";
-import type { PartialParserBuilder } from "../../context/index.js";
+import type { PartialParserBuilder } from "../../types.js";
 
 export function applyStmts<NTs extends string>(
   builder: PartialParserBuilder<NTs>,
