@@ -1,4 +1,4 @@
-import type { CompilerBuildOptions } from "../model.js";
+import type { CompilerBuildOptions } from "../options.js";
 import { profile } from "../utils.js";
 import { serialized } from "./serialized.js";
 import { newParserBuilder, entry } from "./builder.js";

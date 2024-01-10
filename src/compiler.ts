@@ -1,4 +1,4 @@
-import type { CompileOptions, CompilerBuildOptions } from "./model.js";
+import type { CompileOptions, CompilerBuildOptions } from "./options.js";
 import type { DT0Parser } from "./parser/index.js";
 import { buildParser } from "./parser/index.js";
 import { profile } from "./utils.js";
