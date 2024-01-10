@@ -1,66 +1,50 @@
 import binaryen from "binaryen";
-import type { ELR, Lexer } from "retsac";
-import type { Data, Context } from "../../../context/index.js";
+import type { PartialParserBuilder } from "../../../context/index.js";
 
-export function applyFnDefStmts<
-  Kinds extends string,
-  ErrorType,
-  LexerDataBindings extends Lexer.GeneralTokenDataBinding,
-  LexerActionState,
-  LexerErrorType,
->(ctx: Context) {
-  return (
-    builder: ELR.IParserBuilder<
-      Kinds,
-      Data,
-      ErrorType,
-      LexerDataBindings,
-      LexerActionState,
-      LexerErrorType
-    >,
-  ) => {
-    return builder
-      .define(
-        {
-          fn_def: `
+export function applyFnDefStmts<NTs extends string>(
+  builder: PartialParserBuilder<NTs>,
+) {
+  return builder
+    .define(
+      {
+        fn_def: `
             fn identifier '(' (param (',' param)*)? ')' '{'
               stmt*
             '}'
           `,
-        },
-        (d) =>
-          d
-            .traverser(({ $$, $ }) => {
-              ctx.st.withinFunc(() => {
-                // init params
-                $$(`param`).forEach((p) => p.traverse());
-                // calculate stmts
-                const stmts = $$(`stmt`).map((s) => s.traverse()!);
+      },
+      (d) =>
+        d
+          .traverser(({ $$, $, global }) => {
+            global.st.withinFunc(() => {
+              // init params
+              $$(`param`).forEach((p) => p.traverse());
+              // calculate stmts
+              const stmts = $$(`stmt`).map((s) => s.traverse()!);
 
-                // add function to module and export it
-                const funcName = $(`identifier`)!.text!;
-                ctx.mod.addFunction(
-                  // function name
-                  funcName,
-                  // params type
-                  binaryen.createType(ctx.st.getParamTypes()),
-                  // return type
-                  binaryen.i32,
-                  // local vars
-                  ctx.st.getLocalTypes(),
-                  // body
-                  ctx.mod.block(null, stmts),
-                );
-                ctx.mod.addFunctionExport(funcName, funcName);
-              });
-            })
-            .commit(),
-      )
-      .define({ param: `identifier` }, (d) =>
-        d.traverser(({ $ }) => {
-          // add param to symbol table
-          ctx.st.setParam($(`identifier`)!.text!);
-        }),
-      );
-  };
+              // add function to module and export it
+              const funcName = $(`identifier`)!.text;
+              global.mod.addFunction(
+                // function name
+                funcName,
+                // params type
+                binaryen.createType(global.st.getParamTypes()),
+                // return type
+                binaryen.i32,
+                // local vars
+                global.st.getLocalTypes(),
+                // body
+                global.mod.block(null, stmts),
+              );
+              global.mod.addFunctionExport(funcName, funcName);
+            });
+          })
+          .commit(),
+    )
+    .define({ param: `identifier` }, (d) =>
+      d.traverser(({ $, global }) => {
+        // add param to symbol table
+        global.st.setParam($(`identifier`)!.text);
+      }),
+    );
 }

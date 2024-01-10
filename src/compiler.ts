@@ -1,15 +1,12 @@
-import { Context } from "./context/index.js";
 import type { CompileOptions, CompilerBuildOptions } from "./model.js";
 import { buildParser } from "./parser/index.js";
 import { profile } from "./utils.js";
 
 export class Compiler {
   private readonly parser: ReturnType<typeof buildParser>;
-  private readonly ctx: Context;
 
   constructor(options?: CompilerBuildOptions) {
-    this.ctx = new Context();
-    this.parser = buildParser(this.ctx, options);
+    this.parser = buildParser(options);
   }
 
   private parse(code: string, options?: CompileOptions) {
@@ -26,8 +23,14 @@ export class Compiler {
 
     // optimize and validate
     if (options?.optimize ?? true)
-      profile(`optimize`, options?.profile, () => this.ctx.mod.optimize());
-    if (!profile(`validate`, options?.profile, () => this.ctx.mod.validate()))
+      profile(`optimize`, options?.profile, () =>
+        this.parser.global.mod.optimize(),
+      );
+    if (
+      !profile(`validate`, options?.profile, () =>
+        this.parser.global.mod.validate(),
+      )
+    )
       throw new Error("Module is invalid");
   }
 
@@ -37,7 +40,9 @@ export class Compiler {
   compile(code: string, options?: CompileOptions) {
     this.parse(code, options);
 
-    const compiled = new WebAssembly.Module(this.ctx.mod.emitBinary());
+    const compiled = new WebAssembly.Module(
+      this.parser.global.mod.emitBinary(),
+    );
     return new WebAssembly.Instance(compiled, options?.importObject);
   }
 
@@ -46,6 +51,6 @@ export class Compiler {
    */
   emitText(code: string, options?: CompileOptions) {
     this.parse(code, options);
-    return this.ctx.mod.emitText();
+    return this.parser.global.mod.emitText();
   }
 }

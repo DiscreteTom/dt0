@@ -1,4 +1,5 @@
 import { Lexer } from "retsac";
+import type { LexerErrorType } from "../context/index.js";
 
 /**
  * Preserved words in the language.
@@ -9,7 +10,7 @@ const preservedSet = new Set(preserved) as ReadonlySet<string>;
 
 export function buildLexer() {
   return new Lexer.Builder()
-    .error<string>()
+    .error<LexerErrorType>()
     .ignore(
       Lexer.whitespaces(), // ignore blank chars
       Lexer.comment("//"), // single line comment
