@@ -2,20 +2,22 @@ import binaryen from "binaryen";
 import { LabelGenerator } from "./label-gen.js";
 import { SymbolTable } from "./symbol-table.js";
 
-export class ASTGlobal {
-  /** The module. */
-  readonly mod: binaryen.Module;
-  /** Symbol table. */
-  readonly st: SymbolTable;
-  /** Label generator. */
-  readonly lg: LabelGenerator;
+export function ASTGlobalFactory() {
+  const mod = new binaryen.Module();
+  const st = new SymbolTable(mod);
+  const lg = new LabelGenerator();
 
-  constructor() {
-    this.mod = new binaryen.Module();
-    this.st = new SymbolTable(this.mod);
-    this.lg = new LabelGenerator();
+  // set global symbols
+  st.setGlobal("i32");
 
-    // set global symbols
-    this.st.setGlobal("i32");
-  }
+  return Object.freeze({
+    /** The binaryen module. */
+    mod,
+    /** Symbol table. */
+    st,
+    /** Label generator. */
+    lg,
+  });
 }
+
+export type ASTGlobal = ReturnType<typeof ASTGlobalFactory>;
