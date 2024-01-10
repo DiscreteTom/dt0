@@ -1,9 +1,10 @@
 import type { CompileOptions, CompilerBuildOptions } from "./model.js";
+import type { DT0Parser } from "./parser/index.js";
 import { buildParser } from "./parser/index.js";
 import { profile } from "./utils.js";
 
 export class Compiler {
-  private readonly parser: ReturnType<typeof buildParser>;
+  private readonly parser: DT0Parser;
 
   constructor(options?: CompilerBuildOptions) {
     this.parser = buildParser(options);

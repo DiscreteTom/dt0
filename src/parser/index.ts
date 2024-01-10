@@ -17,3 +17,5 @@ export function buildParser(options?: CompilerBuildOptions) {
       }).parser,
   );
 }
+
+export type DT0Parser = ReturnType<typeof buildParser>;
