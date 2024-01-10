@@ -2,11 +2,7 @@ import binaryen from "binaryen";
 import { LabelGenerator } from "./label-gen.js";
 import { SymbolTable } from "./symbol-table.js";
 
-/**
- * The context of the compiler.
- * This is used in `ASTNode.traverse`.
- */
-export class Context {
+export class ASTGlobal {
   /** The module. */
   readonly mod: binaryen.Module;
   /** Symbol table. */

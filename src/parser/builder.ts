@@ -1,13 +1,13 @@
 import { ELR } from "retsac";
 import type { ASTData } from "./types.js";
-import { Context } from "./context/index.js";
+import { ASTGlobal } from "./global/index.js";
 import { buildLexer } from "../lexer/index.js";
 import { applyAllRules } from "./rules/index.js";
 
 export function newParserBuilder() {
   return new ELR.AdvancedBuilder({ lexer: buildLexer() })
     .data<ASTData>()
-    .global(() => new Context())
+    .global(() => new ASTGlobal())
     .define({ fn_defs: `fn_def+` }) // default traverser will traverse all children
     .use(applyAllRules);
 }
