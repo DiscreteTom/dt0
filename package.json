@@ -8,7 +8,11 @@
     "clean": "rimraf out",
     "build": "yarn clean && tsc",
     "dev": "tsc && jest",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
+    "cli": "ts-node scripts/cli.ts",
+    "cli:compatible": "node --loader ts-node/esm scripts/cli.ts",
+    "serialize": "ts-node scripts/serialize.ts",
+    "serialize:compatible": "node --loader ts-node/esm scripts/serialize.ts"
   },
   "dependencies": {
     "binaryen": "^111.0.0",
