@@ -36,22 +36,28 @@ export class Compiler {
   }
 
   /**
-   * Compile code to WebAssembly instance.
-   */
-  compile(code: string, options?: CompileOptions) {
-    this.parse(code, options);
-
-    const compiled = new WebAssembly.Module(
-      this.parser.global.mod.emitBinary(),
-    );
-    return new WebAssembly.Instance(compiled, options?.importObject);
-  }
-
-  /**
    * Compile code to WebAssembly text format.
    */
   emitText(code: string, options?: CompileOptions) {
     this.parse(code, options);
     return this.parser.global.mod.emitText();
+  }
+
+  /**
+   * Compile code to WebAssembly binary format.
+   */
+  emitBinary(code: string, options?: CompileOptions) {
+    this.parse(code, options);
+    return this.parser.global.mod.emitBinary();
+  }
+
+  /**
+   * Compile code to WebAssembly instance.
+   */
+  compile(code: string, options?: CompileOptions) {
+    return new WebAssembly.Instance(
+      new WebAssembly.Module(this.emitBinary(code, options)),
+      options?.importObject,
+    );
   }
 }
