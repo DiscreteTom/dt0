@@ -3,9 +3,7 @@ import { writeFileSync } from "fs";
 import util from "node:util";
 import prettier from "prettier";
 
-// Usage: node --loader ts-node/esm scripts/serialize.ts
-// use the following command when this issue is solved: https://github.com/TypeStrong/ts-node/issues/1997#issuecomment-1518740123
-// Usage: // Usage: ts-node scripts/serialize.ts
+// Usage: yarn serialize
 
 const { serializable } = newParserBuilder().build({
   entry,
