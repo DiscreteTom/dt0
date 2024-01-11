@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { Compiler } from "../src/index.js";
 import { fileURLToPath } from "url";
-import type { CompileOptions, CompilerBuildOptions } from "../src/model.js";
+import { Compiler } from "../src/index.js";
+import type { CompileOptions, CompilerBuildOptions } from "../src/index.js";
 
 export function build(
   jsFileUrl: string,
