@@ -23,7 +23,7 @@ export class Compiler {
     profile(`traverse`, options?.profile, () => res.buffer[0].traverse());
 
     // optimize and validate
-    if (options?.optimize ?? true)
+    if (options?.optimize)
       profile(`optimize`, options?.profile, () =>
         this.parser.global.mod.optimize(),
       );
