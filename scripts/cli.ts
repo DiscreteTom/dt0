@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { Compiler } from "../src/index.js";
 import { Command } from "commander";
 
-// Usage: ts-node examples/cli.ts <xxx.dt0>
+// Usage: ts-node scripts/cli.ts <xxx.dt0>
 
 const program = new Command();
 
